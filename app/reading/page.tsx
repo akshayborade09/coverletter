@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
+import { AnimatedMarkdown } from "flowtoken"
+import BottomNavigation from "@/components/BottomNavigation"
 
 export default function ReadingPage() {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -26,6 +28,13 @@ export default function ReadingPage() {
       audioRef.current.pause()
     }
     router.back()
+  }
+
+  const handleSummarise = () => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+    }
+    router.push("/summary")
   }
 
   useEffect(() => {
@@ -173,7 +182,7 @@ export default function ReadingPage() {
       <div className="px-4 pb-32 space-y-12">
         {questions.map((item, index) => (
           <motion.div 
-            key={index} 
+            key={`qa-${index}`} 
             className="space-y-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -190,7 +199,7 @@ export default function ReadingPage() {
         ))}
       </div>
 
-      {/* Hidden Audio Element */}
+      {/* Hidden Audio Element with Autoplay */}
       <audio
         ref={audioRef}
         preload="metadata"
@@ -200,46 +209,44 @@ export default function ReadingPage() {
         Your browser does not support the audio element.
       </audio>
 
-      {/* Pause/Play Button */}
-      <div className="fixed bottom-9 right-6">
-        <motion.button
-          onClick={togglePlayPause}
-          className="flex-1 p-3 rounded-[63.49px] flex justify-center items-center gap-1.5"
-          style={{ backgroundColor: "#00D128" }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8, type: "spring", stiffness: 200, damping: 20 }}
-          whileTap={{ scale: 0.95 }}
-          whileHover={{ scale: 1.05 }}
-        >
-          {isPlaying ? (
-            <>
-              <motion.div 
-                className="w-6 h-6 relative overflow-hidden flex items-center justify-center"
-                whileTap={{ scale: 0.9 }}
-              >
-                <div className="w-1 h-4 bg-white rounded-sm"></div>
-                <div className="w-1 h-4 bg-white rounded-sm ml-1"></div>
-              </motion.div>
-              <div className="text-center justify-center text-white text-base leading-snug">Pause</div>
-            </>
+      {/* Bottom Navigation with Summarise and Pause/Play */}
+      <BottomNavigation
+        leftButton={{
+          label: "Summarise",
+          onClick: handleSummarise,
+          icon: (
+            <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" clipRule="evenodd" d="M4.5 5C4.5 3.34315 5.84315 2 7.5 2H17.5C19.1569 2 20.5 3.34315 20.5 5V19C20.5 20.6569 19.1569 22 17.5 22H7.5C5.84315 22 4.5 20.6569 4.5 19V5ZM9.5 6C8.94772 6 8.5 6.44772 8.5 7C8.5 7.55228 8.94772 8 9.5 8H15.5C16.0523 8 16.5 7.55228 16.5 7C16.5 6.44772 16.0523 6 15.5 6H9.5ZM9.5 10C8.94772 10 8.5 10.4477 8.5 11C8.5 11.5523 8.94772 12 9.5 12H15.5C16.0523 12 16.5 11.5523 16.5 11C16.5 10.4477 16.0523 10 15.5 10H9.5ZM9.5 14C8.94772 14 8.5 14.4477 8.5 15C8.5 15.5523 8.94772 16 9.5 16H11.5C12.0523 16 12.5 15.5523 12.5 15C12.5 14.4477 12.0523 14 11.5 14H9.5Z" fill="white"/>
+            </svg>
+          ),
+          variant: 'secondary'
+        }}
+        rightButton={{
+          label: isPlaying ? "Pause" : "Play",
+          onClick: togglePlayPause,
+          icon: isPlaying ? (
+            <motion.div 
+              className="w-6 h-6 relative overflow-hidden flex items-center justify-center"
+              whileTap={{ scale: 0.9 }}
+            >
+              <div className="w-1 h-4 bg-white rounded-sm"></div>
+              <div className="w-1 h-4 bg-white rounded-sm ml-1"></div>
+            </motion.div>
           ) : (
-            <>
-              <motion.svg 
-                width="25" 
-                height="24" 
-                viewBox="0 0 25 24" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-                whileTap={{ scale: 0.9 }}
-              >
-                <path d="M10.0765 2.53365C8.07781 1.29918 5.5 2.73688 5.5 5.08605V18.914C5.5 21.2632 8.07781 22.7009 10.0765 21.4664L21.2705 14.5524C23.1686 13.3801 23.1686 10.6199 21.2705 9.44763L10.0765 2.53365Z" fill="white"/>
-              </motion.svg>
-              <div className="text-center justify-center text-white text-base leading-snug">Play</div>
-            </>
-          )}
-        </motion.button>
-      </div>
+            <motion.svg 
+              width="25" 
+              height="24" 
+              viewBox="0 0 25 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              whileTap={{ scale: 0.9 }}
+            >
+              <path d="M10.0765 2.53365C8.07781 1.29918 5.5 2.73688 5.5 5.08605V18.914C5.5 21.2632 8.07781 22.7009 10.0765 21.4664L21.2705 14.5524C23.1686 13.3801 23.1686 10.6199 21.2705 9.44763L10.0765 2.53365Z" fill="white"/>
+            </motion.svg>
+          ),
+          variant: 'primary'
+        }}
+      />
     </div>
   )
 }

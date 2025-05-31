@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
+import { AnimatedMarkdown } from "flowtoken"
 
 export default function SummaryPage() {
   const router = useRouter()
@@ -11,17 +12,31 @@ export default function SummaryPage() {
     router.back()
   }
 
-  const handleReadMe = () => {
-    router.push("/reading")
-  }
-
   const summaryPoints = [
-    "Proficient in JavaScript, Python, Java, and TypeScript with extensive experience in modern frameworks like React, Vue.js, and Node.js for building scalable web applications.",
-    "Experienced with SQL and NoSQL databases including MySQL, PostgreSQL, MongoDB, and Redis. Skilled in database design, optimization, and performance tuning.",
-    "Follow systematic problem-solving approach with clean code implementation and thorough testing. Proficient with Git, GitHub, and collaborative development workflows.",
-    "Implement comprehensive quality assurance through unit testing, code reviews, linting tools, and documentation. Experienced with AWS, Azure, and Google Cloud Platform.",
-    "Experienced with Scrum and Kanban methodologies, effective deadline management, and continuous learning through tech communities and personal projects.",
-    "Motivated by solving complex problems, creating innovative solutions, and building applications that make positive impact. Goal to become technical leader and mentor.",
+    {
+      content: "**Technical Expertise:** Proficient in JavaScript, Python, Java, and TypeScript with extensive experience in modern frameworks like React, Vue.js, and Node.js for building scalable web applications.",
+      animation: "fadeIn"
+    },
+    {
+      content: "**Database Management:** Experienced with SQL and NoSQL databases including MySQL, PostgreSQL, MongoDB, and Redis. Skilled in database design, optimization, and performance tuning.",
+      animation: "fadeIn"
+    },
+    {
+      content: "**Problem-Solving Approach:** Follow systematic problem-solving approach with clean code implementation and thorough testing. Proficient with Git, GitHub, and collaborative development workflows.",
+      animation: "fadeIn"
+    },
+    {
+      content: "**Quality Assurance:** Implement comprehensive quality assurance through unit testing, code reviews, linting tools, and documentation. Experienced with AWS, Azure, and Google Cloud Platform.",
+      animation: "fadeIn"
+    },
+    {
+      content: "**Project Management:** Experienced with Scrum and Kanban methodologies, effective deadline management, and continuous learning through tech communities and personal projects.",
+      animation: "fadeIn"
+    },
+    {
+      content: "**Career Vision:** Motivated by solving complex problems, creating innovative solutions, and building applications that make positive impact. Goal to become technical leader and mentor.",
+      animation: "fadeIn"
+    },
   ]
 
   return (
@@ -94,42 +109,15 @@ export default function SummaryPage() {
             transition={{ delay: 0.1 + (index * 0.05) }}
             whileTap={{ scale: 0.98 }}
           >
-            {point}
+            <AnimatedMarkdown
+              content={point.content}
+              animation={point.animation}
+              animationDuration="0.6s"
+              animationTimingFunction="ease-in"
+              sep="word"
+            />
           </motion.div>
         ))}
-      </div>
-
-      {/* Bottom Smooth Fade Mask */}
-      <div className="fixed bottom-0 left-0 right-0 h-24 pointer-events-none">
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(0deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-            maskImage: 'linear-gradient(0deg, black 0%, black 70%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(0deg, black 0%, black 70%, transparent 100%)'
-          }}
-        ></div>
-      </div>
-
-      {/* Read me Button */}
-      <div className="fixed bottom-8 right-6">
-        <motion.button
-          onClick={handleReadMe}
-          className="px-6 py-3 rounded-full flex items-center justify-center gap-2 text-white text-base font-medium"
-          style={{ backgroundColor: "#00D128" }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8, type: "spring", stiffness: 200, damping: 20 }}
-          whileTap={{ scale: 0.95 }}
-          whileHover={{ scale: 1.05 }}
-        >
-          <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10.0765 2.53365C8.07781 1.29918 5.5 2.73688 5.5 5.08605V18.914C5.5 21.2632 8.07781 22.7009 10.0765 21.4664L21.2705 14.5524C23.1686 13.3801 23.1686 10.6199 21.2705 9.44763L10.0765 2.53365Z" fill="white"/>
-          </svg>
-          <span>Read me</span>
-        </motion.button>
       </div>
     </div>
   )

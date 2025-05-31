@@ -1,4 +1,5 @@
 @import url('https://cdn.jsdelivr.net/gh/marcologous/Open-Sauce-Fonts@latest/fonts/opensauceone-webfonts/opensauceone.css');
+@import 'flowtoken/dist/styles.css';
 
 @tailwind base;
 @tailwind components;

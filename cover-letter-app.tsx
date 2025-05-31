@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
+import BottomNavigation from "@/components/BottomNavigation"
 
 export default function Component() {
   const router = useRouter()
@@ -13,6 +14,30 @@ export default function Component() {
 
   const handleSummarise = () => {
     router.push("/summary")
+  }
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Akshay's Cover Letter",
+          text: "Check out Akshay's interactive cover letter showcasing technical expertise and experience",
+          url: window.location.href
+        })
+      } catch (error) {
+        console.log('Share was cancelled or failed:', error)
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      if (navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(window.location.href)
+          alert('Link copied to clipboard!')
+        } catch (error) {
+          console.log('Copy failed:', error)
+        }
+      }
+    }
   }
 
   return (
@@ -50,9 +75,10 @@ export default function Component() {
         
         {/* Header Content */}
         <div className="relative flex justify-between items-center px-6 bg-gradient-to-b from-black/20 via-black/20 to-transparent pt-5 pb-8">
-          <h1 className="text-2xl font-medium text-white">Cover Letter</h1>
+          <h1 className="text-2xl font-medium text-white">Akshay's Cover Letter</h1>
           <motion.div 
-            className="p-2 rounded-[40px] inline-flex justify-start items-center gap-2.5"
+            className="p-2 rounded-[40px] inline-flex justify-start items-center gap-2.5 cursor-pointer"
+            onClick={handleShare}
             whileTap={{ scale: 0.95 }}
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -350,61 +376,29 @@ export default function Component() {
         </motion.div>
       </div>
 
-      {/* Bottom Smooth Fade Mask */}
-      <div className="fixed bottom-0 left-0 right-0 h-36 pointer-events-none">
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(0deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-            maskImage: 'linear-gradient(0deg, black 0%, black 70%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(0deg, black 0%, black 70%, transparent 100%)'
-          }}
-        ></div>
-      </div>
-
       {/* Bottom Buttons */}
-      <div className="fixed bottom-7 left-4 right-4">
-        <motion.div 
-          className="w-full p-2 rounded-[991.36px] inline-flex justify-start items-center gap-1.5 overflow-hidden"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, type: "spring", stiffness: 200, damping: 20 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(255, 255, 255, 0.50) -19.85%, rgba(235, 235, 235, 0.37) 4.2%, rgba(224, 224, 224, 0.29) 13.88%, rgba(212, 212, 212, 0.21) 27.98%, rgba(207, 207, 207, 0.18) 37.8%, rgba(202, 202, 202, 0.14) 44.38%, rgba(200, 200, 200, 0.13) 50.54%, rgba(196, 196, 196, 0.10) 60.21%)',
-            boxShadow: '0px 1.983px 47.585px -1.983px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(23.792530059814453px)',
-            WebkitBackdropFilter: 'blur(23.792530059814453px)'
-          }}
-        >
-          <motion.button
-            onClick={handleSummarise}
-            className="flex-1 p-3 bg-white/30 rounded-3xl flex justify-center items-center gap-1.5"
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
+      <BottomNavigation
+        leftButton={{
+          label: "Summarise",
+          onClick: handleSummarise,
+          icon: (
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fillRule="evenodd" clipRule="evenodd" d="M4.5 5C4.5 3.34315 5.84315 2 7.5 2H17.5C19.1569 2 20.5 3.34315 20.5 5V19C20.5 20.6569 19.1569 22 17.5 22H7.5C5.84315 22 4.5 20.6569 4.5 19V5ZM9.5 6C8.94772 6 8.5 6.44772 8.5 7C8.5 7.55228 8.94772 8 9.5 8H15.5C16.0523 8 16.5 7.55228 16.5 7C16.5 6.44772 16.0523 6 15.5 6H9.5ZM9.5 10C8.94772 10 8.5 10.4477 8.5 11C8.5 11.5523 8.94772 12 9.5 12H15.5C16.0523 12 16.5 11.5523 16.5 11C16.5 10.4477 16.0523 10 15.5 10H9.5ZM9.5 14C8.94772 14 8.5 14.4477 8.5 15C8.5 15.5523 8.94772 16 9.5 16H11.5C12.0523 16 12.5 15.5523 12.5 15C12.5 14.4477 12.0523 14 11.5 14H9.5Z" fill="white"/>
             </svg>
-            <div className="text-center justify-center text-white text-base leading-snug">Summarise</div>
-          </motion.button>
-          <motion.button
-            onClick={handleReadMe}
-            className="flex-1 p-3 rounded-[63.49px] flex justify-center items-center gap-1.5"
-            style={{ backgroundColor: "#00D128" }}
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
+          ),
+          variant: 'secondary'
+        }}
+        rightButton={{
+          label: "Read me",
+          onClick: handleReadMe,
+          icon: (
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M10.0765 2.53365C8.07781 1.29918 5.5 2.73688 5.5 5.08605V18.914C5.5 21.2632 8.07781 22.7009 10.0765 21.4664L21.2705 14.5524C23.1686 13.3801 23.1686 10.6199 21.2705 9.44763L10.0765 2.53365Z" fill="white"/>
             </svg>
-            <div className="text-center justify-center text-white text-base leading-snug">Read me</div>
-          </motion.button>
-        </motion.div>
-      </div>
+          ),
+          variant: 'primary'
+        }}
+      />
     </div>
   )
 }
