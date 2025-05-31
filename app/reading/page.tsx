@@ -1,21 +1,51 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 
 export default function ReadingPage() {
-  const [isPlaying, setIsPlaying] = useState(true)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement>(null)
   const router = useRouter()
 
   const togglePlayPause = () => {
-    setIsPlaying(!isPlaying)
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause()
+      } else {
+        audioRef.current.play()
+      }
+      setIsPlaying(!isPlaying)
+    }
   }
 
   const handleBack = () => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+    }
     router.back()
   }
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (audio) {
+      const handleEnded = () => setIsPlaying(false)
+      const handlePause = () => setIsPlaying(false)
+      const handlePlay = () => setIsPlaying(true)
+
+      audio.addEventListener('ended', handleEnded)
+      audio.addEventListener('pause', handlePause)
+      audio.addEventListener('play', handlePlay)
+
+      return () => {
+        audio.removeEventListener('ended', handleEnded)
+        audio.removeEventListener('pause', handlePause)
+        audio.removeEventListener('play', handlePlay)
+      }
+    }
+  }, [])
 
   const questions = [
     {
@@ -90,6 +120,15 @@ export default function ReadingPage() {
         backgroundRepeat: "no-repeat",
       }}
     >
+      {/* Landscape Rotation Message */}
+      <div className="fixed inset-0 bg-black flex items-center justify-center z-[100] landscape:flex portrait:hidden">
+        <div className="text-center px-8">
+          <div className="text-6xl mb-4">📱</div>
+          <h2 className="text-2xl font-medium mb-2">Rotate Your Device</h2>
+          <p className="text-gray-300">Please rotate your device to portrait mode for the best experience</p>
+        </div>
+      </div>
+
       {/* Header with Smooth Fade Mask */}
       <div className="sticky top-0 w-full z-20">
         {/* Smooth Fade Mask */}
@@ -105,7 +144,7 @@ export default function ReadingPage() {
         ></div>
         
         {/* Header Content */}
-        <div className="relative flex items-center px-4 bg-gradient-to-b from-neutral-600/40 via-neutral-700/20 to-transparent pt-5 pb-8 gap-4">
+        <div className="relative flex items-center px-4 bg-gradient-to-b from-black/40 via-black/20 to-transparent pt-5 pb-8 gap-4">
           <motion.div 
             className="p-2 rounded-[40px] inline-flex justify-center items-center cursor-pointer"
             onClick={handleBack}
@@ -150,6 +189,16 @@ export default function ReadingPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* Hidden Audio Element */}
+      <audio
+        ref={audioRef}
+        preload="metadata"
+        className="hidden"
+      >
+        <source src="/audio/q1.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
 
       {/* Pause/Play Button */}
       <div className="fixed bottom-9 right-6">

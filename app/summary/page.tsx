@@ -34,6 +34,15 @@ export default function SummaryPage() {
         backgroundRepeat: "no-repeat",
       }}
     >
+      {/* Landscape Rotation Message */}
+      <div className="fixed inset-0 bg-black flex items-center justify-center z-[100] landscape:flex portrait:hidden">
+        <div className="text-center px-8">
+          <div className="text-6xl mb-4">📱</div>
+          <h2 className="text-2xl font-medium mb-2">Rotate Your Device</h2>
+          <p className="text-gray-300">Please rotate your device to portrait mode for the best experience</p>
+        </div>
+      </div>
+
       {/* Header with Smooth Fade Mask */}
       <div className="sticky top-0 w-full z-20">
         {/* Smooth Fade Mask */}
@@ -49,7 +58,7 @@ export default function SummaryPage() {
         ></div>
         
         {/* Header Content */}
-        <div className="relative flex items-center px-4 bg-gradient-to-b from-neutral-600/40 via-neutral-700/20 to-transparent pt-5 pb-8 gap-4">
+        <div className="relative flex items-center px-4 bg-gradient-to-b from-black/40 via-black/20 to-transparent pt-5 pb-8 gap-4">
           <motion.div 
             className="p-2 rounded-[40px] inline-flex justify-center items-center cursor-pointer"
             onClick={handleBack}
