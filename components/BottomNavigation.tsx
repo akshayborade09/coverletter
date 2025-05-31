@@ -19,9 +19,12 @@ export default function BottomNavigation({ leftButton, rightButton }: BottomNavi
       <div 
         className="fixed left-0 right-0 bottom-0 h-36 pointer-events-none z-10"
         style={{
-          height: 'min(144px, 20vh)',
+          height: 'min(144px, 20dvh)',
           position: 'fixed',
-          bottom: '0px'
+          bottom: '0px',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          transform: 'translateZ(0)', // Force hardware acceleration
+          WebkitTransform: 'translateZ(0)'
         }}
       >
         <div 
@@ -38,13 +41,15 @@ export default function BottomNavigation({ leftButton, rightButton }: BottomNavi
 
       {/* Bottom Navigation - Enhanced mobile compatibility */}
       <div 
-        className="fixed left-4 right-4 bottom-7 z-20"
+        className="fixed left-4 right-4 z-20"
         style={{
           position: 'fixed',
-          bottom: '1.75rem',
+          bottom: 'calc(1.75rem + env(safe-area-inset-bottom, 0px))',
           left: '1rem',
           right: '1rem',
-          zIndex: 20
+          zIndex: 20,
+          transform: 'translateZ(0)', // Force hardware acceleration
+          WebkitTransform: 'translateZ(0)'
         }}
       >
         <div 

@@ -42,7 +42,7 @@ export default function Component() {
 
   return (
     <div
-      className="min-h-screen text-white relative"
+      className="min-h-screen-safe text-white relative"
       style={{
         backgroundImage: "url('/images/gradient-bg.png')",
         backgroundSize: "cover",

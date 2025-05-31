@@ -2,13 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile browser optimizations for better viewport handling */
+html {
+  /* Prevent iOS Safari from zooming on focus */
+  -webkit-text-size-adjust: 100%;
+  /* Enable momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent horizontal scroll bounce on iOS */
+  overscroll-behavior-x: none;
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
+  /* Prevent overscroll behavior that can cause empty spaces */
+  overscroll-behavior: none;
+  /* Ensure the body takes full viewport height including mobile browser UI changes */
+  min-height: 100vh;
+  min-height: 100dvh; /* Use dynamic viewport height for mobile browsers */
+}
+
+/* Ensure fixed elements work properly on mobile */
+* {
+  /* Improve fixed positioning on mobile browsers */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  /* Mobile-safe viewport utilities */
+  .h-screen-safe {
+    height: 100vh;
+    height: 100dvh; /* Fallback for browsers that support dynamic viewport */
+  }
+  
+  .min-h-screen-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
 
