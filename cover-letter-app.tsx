@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
 import BottomNavigation from "@/components/BottomNavigation"
 
 export default function Component() {
@@ -40,6 +39,57 @@ export default function Component() {
     }
   }
 
+  const questions = [
+    {
+      question: "1. What programming languages are you proficient in?",
+      answer: "Proficient in JavaScript, Python, Java, and TypeScript with extensive experience in modern frameworks like React, Vue.js, and Node.js for building scalable web applications."
+    },
+    {
+      question: "2. What is your experience with database management?",
+      answer: "Experienced with SQL and NoSQL databases including MySQL, PostgreSQL, MongoDB, and Redis. Skilled in database design, optimization, and performance tuning."
+    },
+    {
+      question: "3. How do you approach problem-solving in software development?",
+      answer: "I follow a systematic approach: understanding requirements, breaking down complex problems, researching solutions, implementing with clean code, and thorough testing."
+    },
+    {
+      question: "4. What is your experience with version control systems?",
+      answer: "Proficient with Git and GitHub for version control, branching strategies, code reviews, and collaborative development workflows in team environments."
+    },
+    {
+      question: "5. How do you ensure code quality and maintainability?",
+      answer: "I implement unit testing, follow coding standards, conduct code reviews, use linting tools, and write comprehensive documentation for long-term maintainability."
+    },
+    {
+      question: "6. What is your experience with cloud platforms?",
+      answer: "Experienced with AWS, Azure, and Google Cloud Platform for deploying applications, managing infrastructure, and implementing CI/CD pipelines."
+    },
+    {
+      question: "7. How do you stay updated with new technologies?",
+      answer: "I regularly read tech blogs, participate in developer communities, attend conferences, take online courses, and work on personal projects to explore new technologies."
+    },
+    {
+      question: "8. What is your experience with agile development methodologies?",
+      answer: "Experienced with Scrum and Kanban methodologies, participating in sprint planning, daily standups, retrospectives, and delivering iterative solutions."
+    },
+    {
+      question: "9. How do you handle tight deadlines and pressure?",
+      answer: "I prioritize tasks effectively, communicate proactively with stakeholders, break down work into manageable chunks, and maintain focus on delivering quality results."
+    },
+    {
+      question: "10. What motivates you in your software development career?",
+      answer: "I'm motivated by solving complex problems, creating innovative solutions, continuous learning, and building applications that make a positive impact on users' lives."
+    },
+    {
+      question: "11. How do you approach learning new programming languages or frameworks?",
+      answer: "I start with official documentation, build small projects, join community forums, watch tutorials, and gradually apply new concepts to real-world scenarios."
+    },
+    {
+      question: "12. What are your long-term career goals in software development?",
+      answer: "I aim to become a technical leader, mentor junior developers, contribute to open-source projects, and eventually lead innovative product development initiatives."
+    }
+  ]
+
   return (
     <div
       className="min-h-screen text-white relative"
@@ -76,12 +126,9 @@ export default function Component() {
         {/* Header Content */}
         <div className="relative flex justify-between items-center px-6 bg-gradient-to-b from-black/20 via-black/20 to-transparent pt-5 pb-8">
           <h1 className="text-2xl font-medium text-white">Akshay's Cover Letter</h1>
-          <motion.div 
-            className="p-2 rounded-[40px] inline-flex justify-start items-center gap-2.5 cursor-pointer"
+          <div 
+            className="p-2 rounded-[40px] inline-flex justify-start items-center gap-2.5 cursor-pointer transition-transform hover:scale-105 active:scale-95"
             onClick={handleShare}
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
             style={{
               background: 'linear-gradient(143deg, rgba(255, 255, 255, 0.37) -3.54%, rgba(114, 114, 114, 0.42) 95.15%)',
               boxShadow: '0px 1.127px 3.381px 0px rgba(255, 255, 255, 0.25) inset, 0px 0.501px 12.022px -0.501px rgba(0, 0, 0, 0.18)',
@@ -93,287 +140,31 @@ export default function Component() {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M20 12.75V17C20 18.6569 18.6569 20 17 20H7C5.34315 20 4 18.6569 4 17V12.75M12 4V15.25M12 4L16.5 8.5M12 4L7.5 8.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </motion.div>
+          </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="px-4 space-y-3 pb-32">
-        {/* Question 1 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            1. What programming languages are you proficient in?
+        {questions.map((question, index) => (
+          <div 
+            key={index}
+            className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4 transition-transform hover:scale-[1.02] active:scale-98"
+            style={{
+              background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
+              boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
+              backdropFilter: 'blur(21.160106658935547px)',
+              WebkitBackdropFilter: 'blur(21.160106658935547px)'
+            }}
+          >
+            <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
+              {question.question}
+            </div>
+            <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
+              {question.answer}
+            </div>
           </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            Proficient in JavaScript, Python, Java, and TypeScript with extensive experience in modern frameworks like
-            React, Vue.js, and Node.js for building scalable web applications.
-          </div>
-        </motion.div>
-
-        {/* Question 2 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            2. What is your experience with database management?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            Experienced with SQL and NoSQL databases including MySQL, PostgreSQL, MongoDB, and Redis. Skilled in
-            database design, optimization, and performance tuning.
-          </div>
-        </motion.div>
-
-        {/* Question 3 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            3. How do you approach problem-solving in software development?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            I follow a systematic approach: understanding requirements, breaking down complex problems, researching
-            solutions, implementing with clean code, and thorough testing.
-          </div>
-        </motion.div>
-
-        {/* Question 4 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            4. What is your experience with version control systems?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            Proficient with Git and GitHub for version control, branching strategies, code reviews, and collaborative
-            development workflows in team environments.
-          </div>
-        </motion.div>
-
-        {/* Question 5 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            5. How do you ensure code quality and maintainability?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            I implement unit testing, follow coding standards, conduct code reviews, use linting tools, and write
-            comprehensive documentation for long-term maintainability.
-          </div>
-        </motion.div>
-
-        {/* Question 6 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            6. What is your experience with cloud platforms?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            Experienced with AWS, Azure, and Google Cloud Platform for deploying applications, managing infrastructure,
-            and implementing CI/CD pipelines.
-          </div>
-        </motion.div>
-
-        {/* Question 7 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            7. How do you stay updated with new technologies?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            I regularly read tech blogs, participate in developer communities, attend conferences, take online courses,
-            and work on personal projects to explore new technologies.
-          </div>
-        </motion.div>
-
-        {/* Question 8 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            8. What is your experience with agile development methodologies?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            Experienced with Scrum and Kanban methodologies, participating in sprint planning, daily standups,
-            retrospectives, and delivering iterative solutions.
-          </div>
-        </motion.div>
-
-        {/* Question 9 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            9. How do you handle tight deadlines and pressure?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            I prioritize tasks effectively, communicate proactively with stakeholders, break down work into manageable
-            chunks, and maintain focus on delivering quality results.
-          </div>
-        </motion.div>
-
-        {/* Question 10 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            10. What motivates you in your software development career?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            I'm motivated by solving complex problems, creating innovative solutions, continuous learning, and building
-            applications that make a positive impact on users' lives.
-          </div>
-        </motion.div>
-
-        {/* Question 11 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            11. How do you approach learning new programming languages or frameworks?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            I start with official documentation, build small projects, join community forums, watch tutorials, and
-            gradually apply new concepts to real-world scenarios.
-          </div>
-        </motion.div>
-
-        {/* Question 12 */}
-        <motion.div 
-          className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
-            boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
-            backdropFilter: 'blur(21.160106658935547px)',
-            WebkitBackdropFilter: 'blur(21.160106658935547px)'
-          }}
-        >
-          <div className="self-stretch opacity-60 justify-start text-white text-sm leading-tight font-open-sauce font-normal">
-            12. What are your long-term career goals in software development?
-          </div>
-          <div className="self-stretch justify-start text-white text-base leading-normal font-open-sauce font-normal">
-            I aim to become a technical leader, mentor junior developers, contribute to open-source projects, and
-            eventually lead innovative product development initiatives.
-          </div>
-        </motion.div>
+        ))}
       </div>
 
       {/* Bottom Buttons */}

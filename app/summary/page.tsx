@@ -2,42 +2,51 @@
 
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { AnimatedMarkdown } from "flowtoken"
+import { TextEffect } from "@/components/motion-primitives/text-effect"
 
 export default function SummaryPage() {
   const router = useRouter()
+
+  const summaryContent = `**Technical Expertise:** Proficient in JavaScript, Python, Java, and TypeScript with extensive experience in modern frameworks like React, Vue.js, and Node.js for building scalable web applications. **Database Management:** Experienced with SQL and NoSQL databases including MySQL, PostgreSQL, MongoDB, and Redis. Skilled in database design, optimization, and performance tuning. **Problem-Solving Approach:** Follow systematic problem-solving approach with clean code implementation and thorough testing. Proficient with Git, GitHub, and collaborative development workflows. **Quality Assurance:** Implement comprehensive quality assurance through unit testing, code reviews, linting tools, and documentation. Experienced with AWS, Azure, and Google Cloud Platform. **Project Management:** Experienced with Scrum and Kanban methodologies, effective deadline management, and continuous learning through tech communities and personal projects. **Career Vision:** Motivated by solving complex problems, creating innovative solutions, and building applications that make positive impact. Goal to become technical leader and mentor.`
 
   const handleBack = () => {
     router.back()
   }
 
-  const summaryPoints = [
-    {
-      content: "**Technical Expertise:** Proficient in JavaScript, Python, Java, and TypeScript with extensive experience in modern frameworks like React, Vue.js, and Node.js for building scalable web applications.",
-      animation: "fadeIn"
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.1
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20,
+      scale: 0.98
     },
-    {
-      content: "**Database Management:** Experienced with SQL and NoSQL databases including MySQL, PostgreSQL, MongoDB, and Redis. Skilled in database design, optimization, and performance tuning.",
-      animation: "fadeIn"
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.4,
+        ease: "easeIn"
+      }
     },
-    {
-      content: "**Problem-Solving Approach:** Follow systematic problem-solving approach with clean code implementation and thorough testing. Proficient with Git, GitHub, and collaborative development workflows.",
-      animation: "fadeIn"
-    },
-    {
-      content: "**Quality Assurance:** Implement comprehensive quality assurance through unit testing, code reviews, linting tools, and documentation. Experienced with AWS, Azure, and Google Cloud Platform.",
-      animation: "fadeIn"
-    },
-    {
-      content: "**Project Management:** Experienced with Scrum and Kanban methodologies, effective deadline management, and continuous learning through tech communities and personal projects.",
-      animation: "fadeIn"
-    },
-    {
-      content: "**Career Vision:** Motivated by solving complex problems, creating innovative solutions, and building applications that make positive impact. Goal to become technical leader and mentor.",
-      animation: "fadeIn"
-    },
-  ]
+    exit: {
+      opacity: 0,
+      y: -10,
+      transition: {
+        duration: 0.1
+      }
+    }
+  }
 
   return (
     <div
@@ -74,12 +83,9 @@ export default function SummaryPage() {
         
         {/* Header Content */}
         <div className="relative flex items-center px-4 bg-gradient-to-b from-black/40 via-black/20 to-transparent pt-5 pb-8 gap-4">
-          <motion.div 
-            className="p-2 rounded-[40px] inline-flex justify-center items-center cursor-pointer"
+          <div 
+            className="p-2 rounded-[40px] inline-flex justify-center items-center cursor-pointer transition-transform hover:scale-105 active:scale-95"
             onClick={handleBack}
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
             style={{
               background: 'linear-gradient(143deg, rgba(255, 255, 255, 0.37) -3.54%, rgba(114, 114, 114, 0.42) 95.15%)',
               boxShadow: '0px 1.127px 3.381px 0px rgba(255, 255, 255, 0.25) inset, 0px 0.501px 12.022px -0.501px rgba(0, 0, 0, 0.18)',
@@ -91,7 +97,7 @@ export default function SummaryPage() {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M19 12H5M12 19l-7-7 7-7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </motion.div>
+          </div>
           <h1 className="text-2xl font-medium text-white">
             Summary
           </h1>
@@ -99,25 +105,17 @@ export default function SummaryPage() {
       </div>
 
       {/* Content */}
-      <div className="px-4 pb-32 space-y-8">
-        {summaryPoints.map((point, index) => (
-          <motion.div 
-            key={index} 
-            className="text-white text-lg leading-relaxed font-light"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + (index * 0.05) }}
-            whileTap={{ scale: 0.98 }}
+      <div className="px-4 pb-32">
+        <div className="text-white text-lg leading-relaxed font-light">
+          <TextEffect
+            per="word"
+            preset="fade"
+            speedReveal={12}
+            className="text-white/70 text-xl  leading-9 font-light whitespace-pre-line"
           >
-            <AnimatedMarkdown
-              content={point.content}
-              animation={point.animation}
-              animationDuration="0.6s"
-              animationTimingFunction="ease-in"
-              sep="word"
-            />
-          </motion.div>
-        ))}
+            {summaryContent}
+          </TextEffect>
+        </div>
       </div>
     </div>
   )

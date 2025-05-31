@@ -3,8 +3,6 @@
 import { Button } from "@/components/ui/button"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { AnimatedMarkdown } from "flowtoken"
 import BottomNavigation from "@/components/BottomNavigation"
 
 export default function ReadingPage() {
@@ -154,12 +152,9 @@ export default function ReadingPage() {
         
         {/* Header Content */}
         <div className="relative flex items-center px-4 bg-gradient-to-b from-black/40 via-black/20 to-transparent pt-5 pb-8 gap-4">
-          <motion.div 
-            className="p-2 rounded-[40px] inline-flex justify-center items-center cursor-pointer"
+          <div 
+            className="p-2 rounded-[40px] inline-flex justify-center items-center cursor-pointer transition-transform hover:scale-105 active:scale-95"
             onClick={handleBack}
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
             style={{
               background: 'linear-gradient(143deg, rgba(255, 255, 255, 0.37) -3.54%, rgba(114, 114, 114, 0.42) 95.15%)',
               boxShadow: '0px 1.127px 3.381px 0px rgba(255, 255, 255, 0.25) inset, 0px 0.501px 12.022px -0.501px rgba(0, 0, 0, 0.18)',
@@ -171,7 +166,7 @@ export default function ReadingPage() {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M19 12H5M12 19l-7-7 7-7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </motion.div>
+          </div>
           <h1 className="text-2xl font-medium text-white">
             Read me
           </h1>
@@ -181,13 +176,9 @@ export default function ReadingPage() {
       {/* Content */}
       <div className="px-4 pb-32 space-y-12">
         {questions.map((item, index) => (
-          <motion.div 
+          <div 
             key={`qa-${index}`} 
             className="space-y-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + (index * 0.05) }}
-            whileTap={{ scale: 0.98 }}
           >
             <div className="text-gray-400 text-base leading-relaxed">
               {index + 1}. {item.question}
@@ -195,7 +186,7 @@ export default function ReadingPage() {
             <div className="text-white text-2xl leading-relaxed font-normal">
               {item.answer}
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -225,24 +216,20 @@ export default function ReadingPage() {
           label: isPlaying ? "Pause" : "Play",
           onClick: togglePlayPause,
           icon: isPlaying ? (
-            <motion.div 
-              className="w-6 h-6 relative overflow-hidden flex items-center justify-center"
-              whileTap={{ scale: 0.9 }}
-            >
+            <div className="w-6 h-6 relative overflow-hidden flex items-center justify-center">
               <div className="w-1 h-4 bg-white rounded-sm"></div>
               <div className="w-1 h-4 bg-white rounded-sm ml-1"></div>
-            </motion.div>
+            </div>
           ) : (
-            <motion.svg 
+            <svg 
               width="25" 
               height="24" 
               viewBox="0 0 25 24" 
               fill="none" 
               xmlns="http://www.w3.org/2000/svg"
-              whileTap={{ scale: 0.9 }}
             >
               <path d="M10.0765 2.53365C8.07781 1.29918 5.5 2.73688 5.5 5.08605V18.914C5.5 21.2632 8.07781 22.7009 10.0765 21.4664L21.2705 14.5524C23.1686 13.3801 23.1686 10.6199 21.2705 9.44763L10.0765 2.53365Z" fill="white"/>
-            </motion.svg>
+            </svg>
           ),
           variant: 'primary'
         }}
