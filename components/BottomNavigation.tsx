@@ -1,5 +1,7 @@
 "use client"
 
+import { useState, useEffect } from 'react'
+
 interface ButtonConfig {
   label: string
   onClick: () => void
@@ -13,6 +15,37 @@ interface BottomNavigationProps {
 }
 
 export default function BottomNavigation({ leftButton, rightButton }: BottomNavigationProps) {
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    let ticking = false
+    let lastScrollY = 0
+
+    const updateScrollDirection = () => {
+      const scrollY = window.scrollY
+      
+      if (Math.abs(scrollY - lastScrollY) < 10) {
+        ticking = false
+        return
+      }
+
+      // Consider "scrolled" when user has scrolled down more than 100px
+      setIsScrolled(scrollY > 100)
+      lastScrollY = scrollY > 0 ? scrollY : 0
+      ticking = false
+    }
+
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateScrollDirection)
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <>
       {/* Bottom Smooth Fade Mask - Enhanced mobile compatibility */}
@@ -39,12 +72,12 @@ export default function BottomNavigation({ leftButton, rightButton }: BottomNavi
         ></div>
       </div>
 
-      {/* Bottom Navigation - Enhanced mobile compatibility */}
+      {/* Bottom Navigation - Enhanced mobile compatibility with scroll detection */}
       <div 
-        className="fixed left-4 right-4 z-20"
+        className="fixed left-4 right-4 z-20 transition-all duration-300 ease-out"
         style={{
           position: 'fixed',
-          bottom: 'calc(1.75rem + env(safe-area-inset-bottom, 0px))',
+          bottom: `calc(${isScrolled ? '0.25rem' : '0.75rem'} + env(safe-area-inset-bottom, 0px))`,
           left: '1rem',
           right: '1rem',
           zIndex: 20,
