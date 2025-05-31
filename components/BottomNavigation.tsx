@@ -77,7 +77,7 @@ export default function BottomNavigation({ leftButton, rightButton }: BottomNavi
         className="fixed left-4 right-4 z-20 transition-all duration-300 ease-out"
         style={{
           position: 'fixed',
-          bottom: `calc(${isScrolled ? '0.25rem' : '0.75rem'} + env(safe-area-inset-bottom, 0px))`,
+          bottom: `calc(${isScrolled ? '0.5rem' : '1rem'} + env(safe-area-inset-bottom, 0px))`,
           left: '1rem',
           right: '1rem',
           zIndex: 20,
