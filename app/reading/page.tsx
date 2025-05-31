@@ -4,11 +4,66 @@ import { Button } from "@/components/ui/button"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import BottomNavigation from "@/components/BottomNavigation"
+import { questionsData } from "@/components/QuestionsData"
 
 export default function ReadingPage() {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
   const audioRef = useRef<HTMLAudioElement>(null)
   const router = useRouter()
+
+  // Simple timing - each paragraph gets equal time based on word count
+  const getAllParagraphs = () => {
+    const paragraphs: Array<{
+      text: string
+      type: 'question' | 'answer'
+      questionIndex: number
+    }> = []
+
+    questionsData.forEach((item, questionIndex) => {
+      // Add question
+      paragraphs.push({
+        text: item.question,
+        type: 'question',
+        questionIndex
+      })
+
+      // Split answer into paragraphs
+      const answerParagraphs = item.answer
+        .split('. ')
+        .map((paragraph, index, array) => {
+          return index < array.length - 1 ? paragraph + '.' : paragraph
+        })
+        .filter(paragraph => paragraph.trim().length > 0)
+
+      // Add each answer paragraph
+      answerParagraphs.forEach(paragraph => {
+        paragraphs.push({
+          text: paragraph,
+          type: 'answer',
+          questionIndex
+        })
+      })
+    })
+
+    return paragraphs
+  }
+
+  const allParagraphs = getAllParagraphs()
+
+  // Simple timing calculation
+  const getParagraphTiming = (paragraphIndex: number) => {
+    const audio = audioRef.current
+    if (!audio || !audio.duration) return { start: 0, end: 0 }
+
+    const totalDuration = audio.duration
+    const paragraphDuration = totalDuration / allParagraphs.length
+    
+    return {
+      start: paragraphIndex * paragraphDuration,
+      end: (paragraphIndex + 1) * paragraphDuration
+    }
+  }
 
   const togglePlayPause = () => {
     if (audioRef.current) {
@@ -41,81 +96,21 @@ export default function ReadingPage() {
       const handleEnded = () => setIsPlaying(false)
       const handlePause = () => setIsPlaying(false)
       const handlePlay = () => setIsPlaying(true)
+      const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
 
       audio.addEventListener('ended', handleEnded)
       audio.addEventListener('pause', handlePause)
       audio.addEventListener('play', handlePlay)
+      audio.addEventListener('timeupdate', handleTimeUpdate)
 
       return () => {
         audio.removeEventListener('ended', handleEnded)
         audio.removeEventListener('pause', handlePause)
         audio.removeEventListener('play', handlePlay)
+        audio.removeEventListener('timeupdate', handleTimeUpdate)
       }
     }
   }, [])
-
-  const questions = [
-    {
-      question: "What programming languages are you proficient in?",
-      answer:
-        "Proficient in JavaScript, Python, Java, and TypeScript with extensive experience in modern frameworks like React, Vue.js, and Node.js for building scalable web applications.",
-    },
-    {
-      question: "What is your experience with database management?",
-      answer:
-        "Experienced with SQL and NoSQL databases including MySQL, PostgreSQL, MongoDB, and Redis. Skilled in database design, optimization, and performance tuning.",
-    },
-    {
-      question: "How do you approach problem-solving in software development?",
-      answer:
-        "I follow a systematic approach: understanding requirements, breaking down complex problems, researching solutions, implementing with clean code, and thorough testing.",
-    },
-    {
-      question: "What is your experience with version control systems?",
-      answer:
-        "Proficient with Git and GitHub for version control, branching strategies, code reviews, and collaborative development workflows in team environments.",
-    },
-    {
-      question: "How do you ensure code quality and maintainability?",
-      answer:
-        "I implement unit testing, follow coding standards, conduct code reviews, use linting tools, and write comprehensive documentation for long-term maintainability.",
-    },
-    {
-      question: "What is your experience with cloud platforms?",
-      answer:
-        "Experienced with AWS, Azure, and Google Cloud Platform for deploying applications, managing infrastructure, and implementing CI/CD pipelines.",
-    },
-    {
-      question: "How do you stay updated with new technologies?",
-      answer:
-        "I regularly read tech blogs, participate in developer communities, attend conferences, take online courses, and work on personal projects to explore new technologies.",
-    },
-    {
-      question: "What is your experience with agile development methodologies?",
-      answer:
-        "Experienced with Scrum and Kanban methodologies, participating in sprint planning, daily standups, retrospectives, and delivering iterative solutions.",
-    },
-    {
-      question: "How do you handle tight deadlines and pressure?",
-      answer:
-        "I prioritize tasks effectively, communicate proactively with stakeholders, break down work into manageable chunks, and maintain focus on delivering quality results.",
-    },
-    {
-      question: "What motivates you in your software development career?",
-      answer:
-        "I'm motivated by solving complex problems, creating innovative solutions, continuous learning, and building applications that make a positive impact on users' lives.",
-    },
-    {
-      question: "How do you approach learning new programming languages or frameworks?",
-      answer:
-        "I start with official documentation, build small projects, join community forums, watch tutorials, and gradually apply new concepts to real-world scenarios.",
-    },
-    {
-      question: "What are your long-term career goals in software development?",
-      answer:
-        "I aim to become a technical leader, mentor junior developers, contribute to open-source projects, and eventually lead innovative product development initiatives.",
-    },
-  ]
 
   return (
     <div
@@ -175,28 +170,62 @@ export default function ReadingPage() {
 
       {/* Content */}
       <div className="px-4 pb-32 space-y-12">
-        {questions.map((item, index) => (
-          <div 
-            key={`qa-${index}`} 
-            className="space-y-6"
-          >
-            <div className="text-gray-400 text-base leading-relaxed">
-              {index + 1}. {item.question}
+        {questionsData.map((item, index) => {
+          // Get paragraph indices for this question/answer pair
+          let paragraphIndex = 0
+          for (let i = 0; i < index; i++) {
+            paragraphIndex += 1 // question
+            const prevAnswerParagraphs = questionsData[i].answer.split('. ').filter(p => p.trim().length > 0)
+            paragraphIndex += prevAnswerParagraphs.length
+          }
+
+          const questionTiming = getParagraphTiming(paragraphIndex)
+          const isQuestionActive = currentTime >= questionTiming.start && currentTime <= questionTiming.end
+          const isQuestionSpoken = currentTime > questionTiming.end
+
+          // Split current answer into paragraphs
+          const answerParagraphs = item.answer
+            .split('. ')
+            .map((paragraph, paragIndex, array) => {
+              return paragIndex < array.length - 1 ? paragraph + '.' : paragraph
+            })
+            .filter(paragraph => paragraph.trim().length > 0)
+
+          return (
+            <div 
+              key={`qa-${index}`} 
+              className="space-y-6"
+            >
+              <div 
+                className="text-gray-400 text-base leading-relaxed"
+              >
+                {item.question}
+              </div>
+              
+              <div className="space-y-4">
+                {answerParagraphs.map((paragraph, paragraphIdx) => {
+                  return (
+                    <div 
+                      key={`answer-${index}-${paragraphIdx}`}
+                      className="text-white text-2xl leading-relaxed font-normal"
+                    >
+                      {paragraph}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
-            <div className="text-white text-2xl leading-relaxed font-normal">
-              {item.answer}
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
-      {/* Hidden Audio Element with Autoplay */}
+      {/* Hidden Audio Element */}
       <audio
         ref={audioRef}
         preload="metadata"
         className="hidden"
       >
-        <source src="/audio/q1.mp3" type="audio/mpeg" />
+        <source src="/audio/Read-out.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
 
@@ -207,7 +236,7 @@ export default function ReadingPage() {
           onClick: handleSummarise,
           icon: (
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fillRule="evenodd" clipRule="evenodd" d="M4.5 5C4.5 3.34315 5.84315 2 7.5 2H17.5C19.1569 2 20.5 3.34315 20.5 5V19C20.5 20.6569 19.1569 22 17.5 22H7.5C5.84315 22 4.5 20.6569 4.5 19V5ZM9.5 6C8.94772 6 8.5 6.44772 8.5 7C8.5 7.55228 8.94772 8 9.5 8H15.5C16.0523 8 16.5 7.55228 16.5 7C16.5 6.44772 16.0523 6 15.5 6H9.5ZM9.5 10C8.94772 10 8.5 10.4477 8.5 11C8.5 11.5523 8.94772 12 9.5 12H15.5C16.0523 12 16.5 11.5523 16.5 11C16.5 10.4477 16.0523 10 15.5 10H9.5ZM9.5 14C8.94772 14 8.5 14.4477 8.5 15C8.5 15.5523 8.94772 16 9.5 16H11.5C12.0523 16 12.5 15.5523 12.5 15C12.5 14.4477 12.0523 14 11.5 14H9.5Z" fill="white"/>
+              <path fillRule="evenodd" clipRule="evenodd" d="M4.5 5C4.5 3.34315 5.84315 2 7.5 2H17.5C19.1569 2 20.5 3.34315 20.5 5V19C20.5 20.6569 19.1569 22 17.5 22H7.5C5.34315 22 4.5 20.6569 4.5 19V5ZM9.5 6C8.94772 6 8.5 6.44772 8.5 7C8.5 7.55228 8.94772 8 9.5 8H15.5C16.0523 8 16.5 7.55228 16.5 7C16.5 6.44772 16.0523 6 15.5 6H9.5ZM9.5 10C8.94772 10 8.5 10.4477 8.5 11C8.5 11.5523 8.94772 12 9.5 12H15.5C16.0523 12 16.5 11.5523 16.5 11C16.5 10.4477 16.0523 10 15.5 10H9.5ZM9.5 14C8.94772 14 8.5 14.4477 8.5 15C8.5 15.5523 8.94772 16 9.5 16H11.5C12.0523 16 12.5 15.5523 12.5 15C12.5 14.4477 12.0523 14 11.5 14H9.5Z" fill="white"/>
             </svg>
           ),
           variant: 'secondary'

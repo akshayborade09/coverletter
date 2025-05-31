@@ -7,7 +7,13 @@ import { TextEffect } from "@/components/motion-primitives/text-effect"
 export default function SummaryPage() {
   const router = useRouter()
 
-  const summaryContent = `**Technical Expertise:** Proficient in JavaScript, Python, Java, and TypeScript with extensive experience in modern frameworks like React, Vue.js, and Node.js for building scalable web applications. **Database Management:** Experienced with SQL and NoSQL databases including MySQL, PostgreSQL, MongoDB, and Redis. Skilled in database design, optimization, and performance tuning. **Problem-Solving Approach:** Follow systematic problem-solving approach with clean code implementation and thorough testing. Proficient with Git, GitHub, and collaborative development workflows. **Quality Assurance:** Implement comprehensive quality assurance through unit testing, code reviews, linting tools, and documentation. Experienced with AWS, Azure, and Google Cloud Platform. **Project Management:** Experienced with Scrum and Kanban methodologies, effective deadline management, and continuous learning through tech communities and personal projects. **Career Vision:** Motivated by solving complex problems, creating innovative solutions, and building applications that make positive impact. Goal to become technical leader and mentor.`
+  const indicTTSRepo = "@https://github.com/AI4Bharat/Indic-TTS"
+
+  const name = `Name: Akshay Borhade`
+  const designation = `Designation: Associate Director Product Design`
+  const company = `Current Company: OLA`
+
+  const summaryContent = `I currently serve as Associate Director at Ola and bring extensive cross-industry experience spanning consumer platforms, fintech at CoverSure, and parenting platforms at The ParentInc. I have successfully led design teams, scaled design systems, and delivered products used by millions of users while maintaining a balance between strategic leadership and hands-on craft execution. My value proposition centers on my systematic problem-solving approach and ability to simplify complex business requirements into intuitive user interfaces. My cross-industry experience has given me pattern recognition skills that allow me to adapt solutions from one domain to another effectively. I am particularly drawn to Noon because of the direct impact that e-commerce design decisions have on business outcomes and the complex, engaging challenges that the marketplace presents. In terms of my leadership philosophy, I emphasize collaborative, egalitarian working relationships over traditional hierarchies. I express comfort with taking direction from potentially younger managers while contributing my senior expertise, believing that mutual respect and shared goals matter more than seniority levels. My mentoring approach involves real-world, hands-on learning rather than separate training sessions, integrating junior designers into actual project work. I have a clear growth vision for my role at Noon, starting with improving platform navigation and building cross-team relationships in the first year, then progressing to lead major product projects and mentor junior designers, ultimately becoming a strategic design leader who influences product direction. I also demonstrate innovation through AI integration, having developed workflows that convert Figma designs to code and create automated design reviews, focusing on AI that enhances rather than replaces human creativity. My career trajectory shows steady growth from individual contributor to strategic leader across multiple industries, with each role teaching me valuable lessons about regulations, scaling for millions of users, and influencing user behavior through design. This breadth of experience has equipped me with the ability to see connections others might miss and solve increasingly complex problems while maintaining excellence in execution.`
 
   const handleBack = () => {
     router.back()
@@ -106,12 +112,52 @@ export default function SummaryPage() {
 
       {/* Content */}
       <div className="px-4 pb-32">
-        <div className="text-white text-lg leading-relaxed font-light">
+        {/* Div 1: Basic Information - Container */}
+        <div className="mb-4">
+          {/* Name */}
+          <div className="mb-1">
+            <TextEffect
+              per="word"
+              preset="fade"
+              speedReveal={12}
+              className="text-white text-lg leading-8 font-regular whitespace-pre-line"
+            >
+              {name}
+            </TextEffect>
+          </div>
+
+          {/* Designation */}
+          <div className="mb-1">
+            <TextEffect
+              per="word"
+              preset="fade"
+              speedReveal={12}
+              className="text-white text-lg leading-8 font-regular whitespace-pre-line"
+            >
+              {designation}
+            </TextEffect>
+          </div>
+
+          {/* Company */}
+          <div className="mb-1">
+            <TextEffect
+              per="word"
+              preset="fade"
+              speedReveal={12}
+              className="text-white text-lg leading-8 font-regular whitespace-pre-line"
+            >
+              {company}
+            </TextEffect>
+          </div>
+        </div>
+
+        {/* Div 2: Professional Summary */}
+        <div>
           <TextEffect
             per="word"
             preset="fade"
             speedReveal={12}
-            className="text-white/70 text-xl  leading-9 font-light whitespace-pre-line"
+            className="text-white/80 text-lg leading-8 font-light whitespace-pre-line"
           >
             {summaryContent}
           </TextEffect>

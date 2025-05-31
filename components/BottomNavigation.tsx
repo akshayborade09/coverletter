@@ -15,12 +15,13 @@ interface BottomNavigationProps {
 export default function BottomNavigation({ leftButton, rightButton }: BottomNavigationProps) {
   return (
     <>
-      {/* Bottom Smooth Fade Mask - Fixed for mobile browsers */}
+      {/* Bottom Smooth Fade Mask - Enhanced mobile compatibility */}
       <div 
-        className="fixed left-0 right-0 h-36 pointer-events-none z-10"
+        className="fixed left-0 right-0 bottom-0 h-36 pointer-events-none z-10"
         style={{
-          bottom: 'env(safe-area-inset-bottom, 0px)',
-          height: 'min(144px, 20vh)'
+          height: 'min(144px, 20vh)',
+          position: 'fixed',
+          bottom: '0px'
         }}
       >
         <div 
@@ -35,11 +36,15 @@ export default function BottomNavigation({ leftButton, rightButton }: BottomNavi
         ></div>
       </div>
 
-      {/* Bottom Navigation - Fixed for mobile browsers */}
+      {/* Bottom Navigation - Enhanced mobile compatibility */}
       <div 
-        className="fixed left-4 right-4 z-20"
+        className="fixed left-4 right-4 bottom-7 z-20"
         style={{
-          bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.75rem)'
+          position: 'fixed',
+          bottom: '1.75rem',
+          left: '1rem',
+          right: '1rem',
+          zIndex: 20
         }}
       >
         <div 
