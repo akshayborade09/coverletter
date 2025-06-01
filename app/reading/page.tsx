@@ -8,69 +8,250 @@ import { questionsData } from "@/components/QuestionsData"
 
 export default function ReadingPage() {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [currentChapterIndex, setCurrentChapterIndex] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false)
+  const [hasReachedLastSection, setHasReachedLastSection] = useState(false)
+  const [isCompleted, setIsCompleted] = useState(false)
+  const [completedItems, setCompletedItems] = useState<Set<string>>(new Set())
+  const [isLoaded, setIsLoaded] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
-  // Simple timing - each paragraph gets equal time based on word count
-  const getAllParagraphs = () => {
-    const paragraphs: Array<{
-      text: string
-      type: 'question' | 'answer'
-      questionIndex: number
-    }> = []
-
-    questionsData.forEach((item, questionIndex) => {
-      // Add question
-      paragraphs.push({
-        text: item.question,
-        type: 'question',
-        questionIndex
-      })
-
-      // Split answer into paragraphs
-      const answerParagraphs = item.answer
-        .split('. ')
-        .map((paragraph, index, array) => {
-          return index < array.length - 1 ? paragraph + '.' : paragraph
-        })
-        .filter(paragraph => paragraph.trim().length > 0)
-
-      // Add each answer paragraph
-      answerParagraphs.forEach(paragraph => {
-        paragraphs.push({
-          text: paragraph,
-          type: 'answer',
-          questionIndex
-        })
-      })
-    })
-
-    return paragraphs
+  // Create playlist mapping based on user's specification
+  const createPlaylist = () => {
+    const playlist: string[] = []
+    
+    // Question 1: 01 (question) + 02-05 (4 bullets) = 5 files
+    playlist.push('01.mp3')
+    playlist.push('02.mp3', '03.mp3', '04.mp3', '05.mp3')
+    
+    // Question 2: 06 (question) + 07-10 (4 bullets) = 5 files
+    playlist.push('06.mp3')
+    playlist.push('07.mp3', '08.mp3', '09.mp3', '10.mp3')
+    
+    // Question 3: 11 (question) + 12-14 (3 bullets) = 4 files
+    playlist.push('11.mp3')
+    playlist.push('12.mp3', '13.mp3', '14.mp3')
+    
+    // Question 4: 15 (question) + 16-19 (4 bullets) = 5 files
+    playlist.push('15.mp3')
+    playlist.push('16.mp3', '17.mp3', '18.mp3', '19.mp3')
+    
+    // Question 5: 20 (question) + 21-24 (4 bullets) = 5 files
+    playlist.push('20.mp3')
+    playlist.push('21.mp3', '22.mp3', '23.mp3', '24.mp3')
+    
+    // Question 6: 25 (question) + 26-28 (3 bullets) = 4 files
+    playlist.push('25.mp3')
+    playlist.push('26.mp3', '27.mp3', '28.mp3')
+    
+    // Question 7: 29 (question) + 30-33 (4 bullets) = 5 files
+    playlist.push('29.mp3')
+    playlist.push('30.mp3', '31.mp3', '32.mp3', '33.mp3')
+    
+    // Question 8: 34 (question) + 35-38 (4 bullets) = 5 files
+    playlist.push('34.mp3')
+    playlist.push('35.mp3', '36.mp3', '37.mp3', '38.mp3')
+    
+    // Question 9: 39 (question) + 40-43 (4 bullets) = 5 files
+    playlist.push('39.mp3')
+    playlist.push('40.mp3', '41.mp3', '42.mp3', '43.mp3')
+    
+    return playlist
   }
 
-  const allParagraphs = getAllParagraphs()
+  const playlist = createPlaylist()
 
-  // Simple timing calculation
-  const getParagraphTiming = (paragraphIndex: number) => {
-    const audio = audioRef.current
-    if (!audio || !audio.duration) return { start: 0, end: 0 }
+  // Generate unique ID for content items
+  const getItemId = (questionIndex: number, bulletIndex: number) => {
+    return bulletIndex === -1 ? `q-${questionIndex}` : `q-${questionIndex}-b-${bulletIndex}`
+  }
 
-    const totalDuration = audio.duration
-    const paragraphDuration = totalDuration / allParagraphs.length
+  // Get current playing item info
+  const getCurrentItemInfo = () => {
+    const chapterIndexes = [
+      0, // Q1: Chapter 01
+      1, 2, 3, 4, 5, // Q1 bullets: Chapters 02-05
+      6, // Q2: Chapter 06
+      7, 8, 9, 10, // Q2 bullets: Chapters 07-10
+      11, // Q3: Chapter 11
+      12, 13, 14, // Q3 bullets: Chapters 12-14
+      15, // Q4: Chapter 15
+      16, 17, 18, 19, // Q4 bullets: Chapters 16-19
+      20, // Q5: Chapter 20
+      21, 22, 23, 24, // Q5 bullets: Chapters 21-24
+      25, // Q6: Chapter 25
+      26, 27, 28, // Q6 bullets: Chapters 26-28
+      29, // Q7: Chapter 29
+      30, 31, 32, 33, // Q7 bullets: Chapters 30-33
+      34, // Q8: Chapter 34
+      35, 36, 37, 38, // Q8 bullets: Chapters 35-38
+      39, // Q9: Chapter 39
+      40, 41, 42, 43  // Q9 bullets: Chapters 40-43
+    ]
     
-    return {
-      start: paragraphIndex * paragraphDuration,
-      end: (paragraphIndex + 1) * paragraphDuration
+    // Find which question and bullet we're currently on
+    let questionIndex = 0
+    let bulletIndex = -1
+    let accumulatedIndex = 0
+    
+    for (let q = 0; q < questionsData.length; q++) {
+      if (currentChapterIndex === accumulatedIndex) {
+        questionIndex = q
+        bulletIndex = -1 // This is the question itself
+        break
+      }
+      accumulatedIndex++
+      
+      for (let b = 0; b < questionsData[q].answer.length; b++) {
+        if (currentChapterIndex === accumulatedIndex) {
+          questionIndex = q
+          bulletIndex = b
+          break
+        }
+        accumulatedIndex++
+      }
+      if (bulletIndex !== -1) break
+    }
+    
+    return { questionIndex, bulletIndex }
+  }
+
+  // Auto-scroll functionality
+  const scrollToCurrentItem = (questionIndex: number, bulletIndex: number) => {
+    const contentContainer = contentRef.current
+    if (!contentContainer) return
+
+    // Find the currently highlighted element
+    let targetElement: HTMLElement | null = null
+    
+    if (bulletIndex === -1) {
+      // Highlighting a question
+      targetElement = contentContainer.querySelector(`[data-question-index="${questionIndex}"]`)
+    } else {
+      // Highlighting a bullet
+      targetElement = contentContainer.querySelector(`[data-question-index="${questionIndex}"][data-bullet-index="${bulletIndex}"]`)
+    }
+
+    if (!targetElement) return
+
+    // Check if we're on the last question (Question 9)
+    const isLastQuestion = questionIndex === questionsData.length - 1
+    
+    if (isLastQuestion && !hasReachedLastSection) {
+      // Get the last element in the content
+      const lastQuestion = contentContainer.querySelector(`[data-question-index="${questionsData.length - 1}"]`)
+      const lastBulletCount = questionsData[questionsData.length - 1].answer.length - 1
+      const lastBullet = contentContainer.querySelector(`[data-question-index="${questionsData.length - 1}"][data-bullet-index="${lastBulletCount}"]`)
+      const lastElement = lastBullet || lastQuestion
+      
+      if (lastElement) {
+        const windowHeight = window.innerHeight
+        const lastElementRect = lastElement.getBoundingClientRect()
+        
+        // If the last element is visible in the viewport, stop auto-scrolling
+        if (lastElementRect.bottom <= windowHeight - 150) { // 150px buffer for bottom navigation
+          setHasReachedLastSection(true)
+          return
+        }
+      }
+    }
+
+    // Only auto-scroll if we haven't reached the last section
+    if (!hasReachedLastSection) {
+      const windowHeight = window.innerHeight
+      const targetRect = targetElement.getBoundingClientRect()
+      
+      // Calculate the center position of the viewport
+      const centerPosition = windowHeight / 2
+      const targetCenter = targetRect.top + targetRect.height / 2
+      
+      // Calculate how much to scroll to center the element
+      const scrollOffset = targetCenter - centerPosition
+      
+      if (Math.abs(scrollOffset) > 10) { // Only scroll if needed
+        window.scrollBy({
+          top: scrollOffset,
+          behavior: 'smooth'
+        })
+      }
     }
   }
 
+  // Effect to handle auto-scroll when current item changes
+  useEffect(() => {
+    const { questionIndex, bulletIndex } = getCurrentItemInfo()
+    scrollToCurrentItem(questionIndex, bulletIndex)
+  }, [currentChapterIndex, hasReachedLastSection])
+
+  // Loading animation effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true)
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const playNextChapter = () => {
+    // Mark current item as completed before moving to next
+    const { questionIndex, bulletIndex } = getCurrentItemInfo()
+    const currentItemId = getItemId(questionIndex, bulletIndex)
+    setCompletedItems(prev => new Set([...prev, currentItemId]))
+    
+    if (currentChapterIndex < playlist.length - 1) {
+      setShouldAutoPlay(isPlaying) // Remember if we should auto-play
+      setCurrentChapterIndex(currentChapterIndex + 1)
+    } else {
+      // Reached the end, pause and mark as completed
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
+      setIsPlaying(false)
+      setShouldAutoPlay(false)
+      setIsCompleted(true)
+    }
+  }
+
+  const handleRestart = () => {
+    // Reset all states
+    setCurrentChapterIndex(0)
+    setIsCompleted(false)
+    setHasReachedLastSection(false)
+    setCompletedItems(new Set())
+    setShouldAutoPlay(true)
+    
+    // Scroll to top
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+    
+    // Start playing after a short delay to ensure everything is reset
+    setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.play().catch(error => {
+          console.log('Auto-play failed on restart:', error)
+          setShouldAutoPlay(false)
+        })
+      }
+    }, 500)
+  }
+
   const togglePlayPause = () => {
+    if (isCompleted) {
+      handleRestart()
+      return
+    }
+    
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause()
+        setShouldAutoPlay(false)
       } else {
         audioRef.current.play()
+        setShouldAutoPlay(true)
       }
       setIsPlaying(!isPlaying)
     }
@@ -80,6 +261,10 @@ export default function ReadingPage() {
     if (audioRef.current) {
       audioRef.current.pause()
     }
+    setShouldAutoPlay(false)
+    setHasReachedLastSection(false)
+    setIsCompleted(false)
+    setCompletedItems(new Set())
     router.back()
   }
 
@@ -87,14 +272,25 @@ export default function ReadingPage() {
     if (audioRef.current) {
       audioRef.current.pause()
     }
+    setShouldAutoPlay(false)
+    setHasReachedLastSection(false)
+    setIsCompleted(false)
+    setCompletedItems(new Set())
     router.push("/summary")
   }
 
+  // Main effect for audio event listeners
   useEffect(() => {
     const audio = audioRef.current
     if (audio) {
-      const handleEnded = () => setIsPlaying(false)
-      const handlePause = () => setIsPlaying(false)
+      const handleEnded = () => {
+        playNextChapter()
+      }
+      const handlePause = () => {
+        if (!shouldAutoPlay) {
+          setIsPlaying(false)
+        }
+      }
       const handlePlay = () => setIsPlaying(true)
       const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
 
@@ -110,11 +306,58 @@ export default function ReadingPage() {
         audio.removeEventListener('timeupdate', handleTimeUpdate)
       }
     }
-  }, [])
+  }, [currentChapterIndex, isPlaying, shouldAutoPlay])
+
+  // Effect to handle chapter transitions and auto-play
+  useEffect(() => {
+    const audio = audioRef.current
+    if (audio && shouldAutoPlay) {
+      // Wait for the audio to load and then play
+      const attemptPlay = () => {
+        if (audio.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+          audio.play().catch(error => {
+            console.log('Auto-play failed:', error)
+            setShouldAutoPlay(false)
+          })
+        } else {
+          // Wait a bit more for the audio to load
+          setTimeout(attemptPlay, 50)
+        }
+      }
+      
+      // Start attempting to play after a short delay
+      const timer = setTimeout(attemptPlay, 100)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [currentChapterIndex, shouldAutoPlay])
+
+  const { questionIndex, bulletIndex } = getCurrentItemInfo()
+
+  // Get color class for content items
+  const getQuestionColorClass = (index: number) => {
+    const itemId = getItemId(index, -1)
+    const isCompleted = completedItems.has(itemId)
+    const isCurrent = questionIndex === index && bulletIndex === -1
+    
+    if (isCompleted) return 'text-white'
+    if (isCurrent) return 'text-green-400'
+    return 'text-white/30'
+  }
+
+  const getBulletColorClass = (qIndex: number, bIndex: number) => {
+    const itemId = getItemId(qIndex, bIndex)
+    const isCompleted = completedItems.has(itemId)
+    const isCurrent = questionIndex === qIndex && bulletIndex === bIndex
+    
+    if (isCompleted) return 'text-white'
+    if (isCurrent) return 'text-green-400'
+    return 'text-white/30'
+  }
 
   return (
     <div
-      className="min-h-screen text-white relative"
+      className="min-h-screen-safe text-white relative"
       style={{
         backgroundImage: "url('/images/gradient-bg.png')",
         backgroundSize: "cover",
@@ -148,7 +391,7 @@ export default function ReadingPage() {
         {/* Header Content */}
         <div className="relative flex items-center px-4 bg-gradient-to-b from-black/40 via-black/20 to-transparent pt-5 pb-8 gap-4">
           <div 
-            className="p-2 rounded-[40px] inline-flex justify-center items-center cursor-pointer transition-transform hover:scale-105 active:scale-95"
+            className="p-2 rounded-[40px] inline-flex justify-center items-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 hover:brightness-110 active:brightness-90"
             onClick={handleBack}
             style={{
               background: 'linear-gradient(143deg, rgba(255, 255, 255, 0.37) -3.54%, rgba(114, 114, 114, 0.42) 95.15%)',
@@ -169,54 +412,41 @@ export default function ReadingPage() {
       </div>
 
       {/* Content */}
-      <div className="px-4 pb-32 space-y-12">
-        {questionsData.map((item, index) => {
-          // Get paragraph indices for this question/answer pair
-          let paragraphIndex = 0
-          for (let i = 0; i < index; i++) {
-            paragraphIndex += 1 // question
-            const prevAnswerParagraphs = questionsData[i].answer.split('. ').filter(p => p.trim().length > 0)
-            paragraphIndex += prevAnswerParagraphs.length
-          }
-
-          const questionTiming = getParagraphTiming(paragraphIndex)
-          const isQuestionActive = currentTime >= questionTiming.start && currentTime <= questionTiming.end
-          const isQuestionSpoken = currentTime > questionTiming.end
-
-          // Split current answer into paragraphs
-          const answerParagraphs = item.answer
-            .split('. ')
-            .map((paragraph, paragIndex, array) => {
-              return paragIndex < array.length - 1 ? paragraph + '.' : paragraph
-            })
-            .filter(paragraph => paragraph.trim().length > 0)
-
-          return (
+      <div ref={contentRef} className="px-4 pb-32 space-y-8">
+        {questionsData.map((item, index) => (
+          <div 
+            key={`qa-${index}`} 
+            className={`space-y-4 transition-all duration-700 ease-out ${
+              isLoaded 
+                ? 'opacity-100 translate-y-0' 
+                : 'opacity-0 translate-y-8'
+            }`}
+            style={{
+              transitionDelay: `${index * 150}ms`
+            }}
+          >
             <div 
-              key={`qa-${index}`} 
-              className="space-y-6"
+              data-question-index={index}
+              className={`text-2xl leading-tight font-normal transition-colors ${getQuestionColorClass(index)}`}
             >
-              <div 
-                className="text-gray-400 text-base leading-relaxed"
-              >
-                {item.question}
-              </div>
-              
-              <div className="space-y-4">
-                {answerParagraphs.map((paragraph, paragraphIdx) => {
-                  return (
-                    <div 
-                      key={`answer-${index}-${paragraphIdx}`}
-                      className="text-white text-2xl leading-relaxed font-normal"
-                    >
-                      {paragraph}
-                    </div>
-                  )
-                })}
-              </div>
+              {item.question}
             </div>
-          )
-        })}
+            
+            <div className="text-white/90 text-2xl leading-relaxed font-light">
+              {item.answer.map((bulletPoint, bulletIdx) => (
+                <div 
+                  key={bulletIdx} 
+                  data-question-index={index}
+                  data-bullet-index={bulletIdx}
+                  className={`mb-2 last:mb-0 flex transition-colors ${getBulletColorClass(index, bulletIdx)}`}
+                >
+                  <span className="mr-2 flex-shrink-0">•</span>
+                  <span className="flex-1">{bulletPoint}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Hidden Audio Element */}
@@ -224,8 +454,9 @@ export default function ReadingPage() {
         ref={audioRef}
         preload="metadata"
         className="hidden"
+        key={currentChapterIndex}
       >
-        <source src="/audio/Read-out.mp3" type="audio/mpeg" />
+        <source src={`/audio/${playlist[currentChapterIndex]}`} type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
 
@@ -242,9 +473,20 @@ export default function ReadingPage() {
           variant: 'secondary'
         }}
         rightButton={{
-          label: isPlaying ? "Pause" : "Play",
+          label: isCompleted ? "Restart" : (isPlaying ? "Pause" : "Play"),
           onClick: togglePlayPause,
-          icon: isPlaying ? (
+          icon: isCompleted ? (
+            <svg 
+              width="25" 
+              height="24" 
+              viewBox="0 0 25 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M4.5 12C4.5 7.58172 8.08172 4 12.5 4C16.9183 4 20.5 7.58172 20.5 12C20.5 16.4183 16.9183 20 12.5 20C10.7817 20 9.21373 19.4151 7.96087 18.4295" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M8.5 16L6.5 18L4.5 16" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          ) : isPlaying ? (
             <div className="w-6 h-6 relative overflow-hidden flex items-center justify-center">
               <div className="w-1 h-4 bg-white rounded-sm"></div>
               <div className="w-1 h-4 bg-white rounded-sm ml-1"></div>
@@ -266,3 +508,4 @@ export default function ReadingPage() {
     </div>
   )
 }
+

@@ -2,11 +2,21 @@
 
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
 import BottomNavigation from "@/components/BottomNavigation"
 import { questionsData } from "@/components/QuestionsData"
 
 export default function Component() {
   const router = useRouter()
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Loading animation effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true)
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleReadMe = () => {
     router.push("/reading")
@@ -74,10 +84,10 @@ export default function Component() {
         ></div>
         
         {/* Header Content */}
-        <div className="relative flex justify-between items-center px-6 bg-gradient-to-b from-black/20 via-black/20 to-transparent pt-5 pb-8">
+        <div className="relative flex justify-between items-center px-4 bg-gradient-to-b from-black/20 via-black/20 to-transparent pt-5 pb-8">
           <h1 className="text-2xl font-medium text-white">Akshay's Cover Letter</h1>
           <div 
-            className="p-2 rounded-[40px] inline-flex justify-start items-center gap-2.5 cursor-pointer transition-transform hover:scale-105 active:scale-95"
+            className="p-2 rounded-[40px] inline-flex justify-start items-center gap-2.5 cursor-pointer transition-all duration-200 ease-out hover:scale-105 active:scale-95 hover:brightness-110 active:brightness-90"
             onClick={handleShare}
             style={{
               background: 'linear-gradient(143deg, rgba(255, 255, 255, 0.37) -3.54%, rgba(114, 114, 114, 0.42) 95.15%)',
@@ -99,19 +109,29 @@ export default function Component() {
         {questionsData.map((question, index) => (
           <div 
             key={index}
-            className="self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4"
+            className={`self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4 transition-all duration-700 ease-out ${
+              isLoaded 
+                ? 'opacity-100 translate-y-0' 
+                : 'opacity-0 translate-y-8'
+            }`}
             style={{
               background: 'linear-gradient(118deg, rgba(235, 235, 235, 0.15) 1.53%, rgba(224, 224, 224, 0.14) 19.05%, rgba(212, 212, 212, 0.11) 40.83%, rgba(207, 207, 207, 0.09) 48.89%, rgba(202, 202, 202, 0.07) 61.66%, rgba(200, 200, 200, 0.06) 81.54%, rgba(196, 196, 196, 0.05) 100%)',
               boxShadow: '0px 1.763px 42.32px -1.763px rgba(0, 0, 0, 0.18)',
               backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)'
+              WebkitBackdropFilter: 'blur(20px)',
+              transitionDelay: `${index * 150}ms`
             }}
           >
             <div className="self-stretch justify-start text-white/50 text-base leading-tight font-normal">
               {question.question}
             </div>
             <div className="self-stretch justify-start text-white/90 text-base leading-relaxed font-normal">
-              {question.answer}
+              {question.answer.map((bulletPoint, bulletIndex) => (
+                <div key={bulletIndex} className="mb-2 last:mb-0 flex">
+                  <span className="mr-2 flex-shrink-0">•</span>
+                  <span className="flex-1">{bulletPoint}</span>
+                </div>
+              ))}
             </div>
           </div>
         ))}

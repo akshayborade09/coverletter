@@ -1,43 +1,96 @@
 export interface Question {
   question: string
-  answer: string
+  answer: string[]
+  audioFile?: string
 }
 
 export const questionsData: Question[] = [
   {
-    question: "1. Why I think I am best fit for Noon as Leadership in Product Design",
-    answer: "I've demonstrated my ability to work at both levels as an Associate Director at Ola, personally promoting design excellence while leading design team. I have a thorough understanding of a variety of user needs and business models thanks to my experience in consumer platforms (Ola), fintech (CoverSure), and parenting platforms (The ParentInc). I've led teams, scaled design systems, and produced products that millions of people use. Above all, I've always selected positions that allow me to remain true to my craft; this isn't about stepping down; rather, it's about striking the correct balance between impact and execution. With design I have gone extra mile in crafting the designs into real product which helps me to delivery real life prototype to stakeholder and developers to plug it in their system."
+    question: "What Makes Me Right for This Role",
+    answer: [
+      "I've been doing this at Ola as Associate Director - balancing the big picture stuff with actually hands on in design",
+      "Built products across totally different worlds: ride-sharing, AI chat assistant at Ola, insurance chaos at CoverSure, parenting madness at The ParentInc",
+      "I don't just hand off pretty mockups - I build working prototypes that developers can actually use",
+      "Led teams while still being the person who catches those tiny interaction details that make users go \"wow\""
+    ],
+    audioFile: "01.mp3"
   },
   {
-    question: "2. How all my past experience, journey, current journey, and learning align with what the Noon's design team is looking for and what I do?",
-    answer: "I work across consumer and AI platforms at Ola, where I am familiar with cross-functional collaboration and complex user journey, exactly what e-commerce requires. I learned how to simplify complex workflows while balancing user needs with business limitations and regulatory requirements during my fintech experience at CoverSure. I oversaw the design strategy for platforms that served millions of people in Southeast Asia at The ParentInc., where I gained insight into a variety of markets and scaling issues. I've always worked on products that prioritize user trust, smooth user experiences, and business expansion—exactly the same issues Noon is facing in e-commerce. My progression from individual contributor to strategic leader while maintaining hands-on skills makes me ideal for this role."
+    question: "Why My Background Fits Noon Perfectly",
+    answer: [
+      "E-commerce is basically what I've been doing at Ola - complex user journeys, tons of stakeholders, millions of people using your stuff daily",
+      "CoverSure taught me how to make complicated financial stuff feel simple (trust me, if you can make insurance easy, you can make anything easy)",
+      "The ParentInc showed me how to design for diverse markets across Southeast Asia - different cultures, different needs, same goal of delighting users",
+      "I've always worked on products where user trust isn't optional - it's everything"
+    ],
+    audioFile: "06.mp3"
   },
   {
-    question: "3. What specific value I can bring to Noon that a less experienced designer cannot?",
-    answer: "I help businesses think through problems in a clear, step-by-step way that works consistently. I build systems that keep users engaged and coming back to products regularly. I can see important details in how users interact with products that other designers might miss. I've developed better ways of working that let me deliver faster without compromising on quality. I'm good at taking complex business needs and turning them into simple, easy-to-use interfaces. Having worked across different industries like online marketplaces, financial apps, and consumer platforms, I can spot useful patterns and apply solutions from one area to another. Most importantly, I design products that achieve business goals while keeping users happy and satisfied."
+    question: "What I Bring That other Designers Can't",
+    answer: [
+      "I can smell a bad user flow from a mile away and know exactly what to fix it",
+      "Built systems that actually get people hooked on products (the good kind of hooked)",
+      "I've seen enough patterns across industries to steal the best ideas and make them work in new contexts"
+    ],
+    audioFile: "11.mp3"
   },
   {
-    question: "4. Given my senior background, how I will handle taking direction from potentially younger managers or stakeholders?",
-    answer: "I believe in working together as equals rather than following strict chains of command, and this approach has made my projects successful. I work closely with people from different teams - developers, product managers, etc - because I know the best results come from everyone contributing their strengths. My approach is simple: I listen carefully first, understand what challenges we're facing, and then figure out how I can add the most value. Throughout my career, I've been good at taking guidance from others while also sharing my design knowledge when it's helpful. I believe that mutual respect and shared goals matter more than who's senior or junior. I'm excited to bring my proven track record of solving user problems and creating engaging solutions, while also staying open to learning new perspectives from the team. I see every project as a chance to both contribute and grow."
+    question: "Working with Anyone, Regardless of Age",
+    answer: [
+      "Honestly, the best ideas come from everywhere - I've learned killer insights from fresh graduates",
+      "I listen first, ask questions, then figure out where I can actually help",
+      "Been doing this long enough to know that ego kills good design",
+      "My job is to make everyone around me better, not prove I'm the smartest person in the room"
+    ],
+    audioFile: "15.mp3"
   },
   {
-    question: "5. What draws me specifically to Noon versus other senior design roles in the market?",
-    answer: "Noon is exactly the kind of challenge that excites me most - it's complex but also has real impact. In e-commerce, every design choice directly affects how well the business does, which I find really motivating. From my past work, I've learned how satisfying it is to design solutions that actually help real users, especially when millions of people use them. Noon's marketplace has the kind of complexity that keeps me engaged and pushes me to do my best work. I want to be somewhere my design work immediately makes a difference in people's daily lives. Many senior roles take you away from actually doing the design work, but Noon seems to offer the best of both worlds - meaningful, challenging problems to solve while still being involved in the actual creation and execution."
+    question: "Why Noon, Not Just Any Senior Role",
+    answer: [
+      "E-commerce is where design decisions immediately shows up in revenue - I love that direct impact",
+      "Noon's complexity keeps me sharp - marketplace dynamics, seller tools, buyer journeys, it's all interconnected",
+      "Most senior roles pull you away from actual design work, but this feels like I can still create while leading",
+      "I want to build something that million of people actually uses and loves it"
+    ],
+    audioFile: "20.mp3"
   },
   {
-    question: "6. How I see myself growing within this role, and what's my 2-3 year vision here?",
-    answer: "In the early year I'll use my tested methods to improve how users navigate through key parts of the platform and build strong working relationships with different teams to deliver great results. Subsequently I'll take charge of big product projects and lead teams from different departments to improve both user experience and business performance. I'll also guide and teach junior designers and later become a design leader who helps decide product direction and supports Noon's design team as it grows, making sure we keep focusing on users and maintain high quality work. My aim is to help create world-class user experiences while developing myself as a designer who can think strategically and deliver excellent work at the same time."
+    question: "Where I See This Going",
+    answer: [
+      "First year: Fix the obvious stuff, build trust with teams, start seeing real improvements in user metrics",
+      "Next phase: Own big product initiatives, mentor the junior folks, start shaping product strategy",
+      "Long term: Be the design voice in major business decisions while growing a team that can ship world-class experiences"
+    ],
+    audioFile: "25.mp3"
   },
   {
-    question: "7. How I would approach mentoring junior designers while still delivering on my individual contributor responsibilities?",
-    answer: "I teach junior designers by involving them in real work rather than having separate training sessions. I bring them into my actual design process - whether we're researching competitors, talking to users, or creating prototypes using the latest tools. Instead of sitting in meeting rooms for mentoring, we learn together while working on actual projects. My method is simple: \"learn by doing.\" I show them how to think systematically about design problems and how to properly hand over work to developers. I document what we're doing, explain my design choices as we make them, and slowly give them more responsibility on projects. This way works really well because designers learn practical skills while we're still meeting our project deadlines and goals. They get real experience, and the work doesn't suffer - in fact, it often gets better because of the fresh perspectives they bring."
+    question: "How I Mentor Without Dropping the Ball",
+    answer: [
+      "I bring designers into real projects - they learn by doing, not by creating assumptions around the product",
+      "Show them my actual process while we're building something that matters",
+      "They get better, I get fresh perspectives, everyone wins",
+      "No separate \"mentoring time\" - we learn together while shipping great work"
+    ],
+    audioFile: "29.mp3"
   },
   {
-    question: "8. How do I balance being an individual contributor while driving innovation and improving team workflows, especially with AI tools?",
-    answer: "As someone who does the actual design work, I innovate by improving how I execute projects. I've created complete AI-powered workflows that change how we deliver design work - taking designs from Figma and using AI to generate code, which lets me create working prototypes without depending too much on developers. I also use AI to test and validate designs by creating synthetic user tests and automated design reviews. My approach is straightforward: I notice where our daily work gets stuck or slowed down, try out AI solutions to fix those problems, measure if they actually help, and then teach successful methods to the team. I focus on AI that makes human creativity better, not AI that tries to replace it. The AI handles boring, repetitive stuff like generating code and checking for consistency, which frees up my mind for strategic thinking and understanding users better. This speeds up decision-making for stakeholders, makes the handoff from design to development more accurate, and proves that small teams can deliver complex experiences quickly. The important thing is making these innovations feel natural and easy to adopt, not like they're completely changing everything we do."
+    question: "Staying Hands-On While Pushing Innovation",
+    answer: [
+      "Built AI workflows that turn my Figma designs into working code - no more \"it looked different in design\"",
+      "Use AI to test designs before we even build them - synthetic user testing saves us weeks",
+      "I automate the boring stuff so I can focus on the creative problems",
+      "Small teams can ship complex experiences when you use the right tools smartly"
+    ],
+    audioFile: "34.mp3"
   },
   {
-    question: "9. What have I accomplished in my career, how would I describe your growth trajectory?",
-    answer: "My career has grown steadily in both the size of projects I handle and the impact I make - I started with basic design tasks, moved through UX roles where I learned to think from the user's perspective, advanced to senior positions managing complicated product systems, and eventually became a design leader who can think strategically while still doing excellent hands-on work. What I've achieved includes transformation projects across different industries - I've turned complicated insurance processes into engaging user experiences, designed AI-powered development workflows, and consistently delivered products that make both users happy and businesses successful. I've created designs, guided teams, and developed new ways of working that speed up entire organizations. My growth hasn't been a straight climb up the ladder - it's been about expanding my ability to solve bigger and more complex problems. Each role taught me something new: fintech showed me how regulations complicate design, mobility platforms taught me about designing for millions of users, and consumer products revealed how to influence user behavior through design. This breadth of experience helps me see connections others might miss and solve problems more effectively."
+    question: "How I Got Here",
+    answer: [
+      "Started fixing pixels, learned to think about users, grew into someone who can see the whole business picture",
+      "Each job taught me something crucial: Ola showed me scale, CoverSure taught me trust, The ParentInc revealed cultural nuance",
+      "I don't climb ladders - I solve bigger problems",
+      "All that experience helps me see solutions which others misses"
+    ],
+    audioFile: "39.mp3"
   }
 ] 

@@ -96,7 +96,7 @@ export default function BottomNavigation({ leftButton, rightButton }: BottomNavi
         >
           <button
             onClick={leftButton.onClick}
-            className={`flex-1 p-3 rounded-3xl flex justify-center items-center gap-1.5 transition-transform hover:scale-105 active:scale-95 ${
+            className={`flex-1 p-3 rounded-3xl flex justify-center items-center gap-1.5 transition-all duration-200 ease-out hover:scale-105 active:scale-95 hover:brightness-110 active:brightness-90 ${
               leftButton.variant === 'primary' ? '' : 'bg-white/30'
             }`}
             style={leftButton.variant === 'primary' ? { backgroundColor: "#00D128" } : {}}
@@ -108,7 +108,7 @@ export default function BottomNavigation({ leftButton, rightButton }: BottomNavi
           </button>
           <button
             onClick={rightButton.onClick}
-            className={`flex-1 p-3 rounded-[63.49px] flex justify-center items-center gap-1.5 transition-transform hover:scale-105 active:scale-95 ${
+            className={`flex-1 p-3 rounded-[63.49px] flex justify-center items-center gap-1.5 transition-all duration-200 ease-out hover:scale-105 active:scale-95 hover:brightness-110 active:brightness-90 ${
               rightButton.variant === 'primary' ? '' : 'bg-white/30'
             }`}
             style={rightButton.variant === 'primary' ? { backgroundColor: "#00D128" } : {}}
