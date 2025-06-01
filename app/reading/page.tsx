@@ -244,11 +244,15 @@ export default function ReadingPage() {
     const currentItemId = getItemId(questionIndex, bulletIndex)
     setCompletedItems(prev => new Set([...prev, currentItemId]))
     
+    addDebugInfo(`Finishing chapter ${currentChapterIndex}, moving to next`)
+    
     if (currentChapterIndex < playlist.length - 1) {
       setShouldAutoPlay(isPlaying) // Remember if we should auto-play
       setCurrentChapterIndex(currentChapterIndex + 1)
+      addDebugInfo(`Advanced to chapter ${currentChapterIndex + 1}`)
     } else {
       // Reached the end, pause and mark as completed
+      addDebugInfo('Reached end of playlist')
       if (audioRef.current) {
         audioRef.current.pause()
       }
@@ -414,26 +418,54 @@ export default function ReadingPage() {
     const audio = audioRef.current
     if (audio) {
       const handleEnded = () => {
+        addDebugInfo('Audio ended event fired')
         playNextChapter()
       }
       const handlePause = () => {
         if (!shouldAutoPlay) {
           setIsPlaying(false)
+          addDebugInfo('Audio paused (not by auto-advance)')
         }
       }
-      const handlePlay = () => setIsPlaying(true)
+      const handlePlay = () => {
+        setIsPlaying(true)
+        addDebugInfo('Audio play event confirmed')
+      }
       const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
+      
+      // Additional mobile-specific events
+      const handleCanPlay = () => {
+        addDebugInfo('Audio can play - ready for playback')
+        setAudioError(null)
+      }
+      
+      const handleWaiting = () => {
+        addDebugInfo('Audio waiting for more data')
+      }
+      
+      const handleStalled = () => {
+        addDebugInfo('Audio stalled - network issues')
+      }
 
       audio.addEventListener('ended', handleEnded)
       audio.addEventListener('pause', handlePause)
       audio.addEventListener('play', handlePlay)
       audio.addEventListener('timeupdate', handleTimeUpdate)
+      audio.addEventListener('canplay', handleCanPlay)
+      audio.addEventListener('waiting', handleWaiting)
+      audio.addEventListener('stalled', handleStalled)
+
+      addDebugInfo(`Event listeners attached for chapter ${currentChapterIndex}`)
 
       return () => {
         audio.removeEventListener('ended', handleEnded)
         audio.removeEventListener('pause', handlePause)
         audio.removeEventListener('play', handlePlay)
         audio.removeEventListener('timeupdate', handleTimeUpdate)
+        audio.removeEventListener('canplay', handleCanPlay)
+        audio.removeEventListener('waiting', handleWaiting)
+        audio.removeEventListener('stalled', handleStalled)
+        addDebugInfo(`Event listeners cleaned up for chapter ${currentChapterIndex}`)
       }
     }
   }, [currentChapterIndex, isPlaying, shouldAutoPlay])
@@ -454,61 +486,78 @@ export default function ReadingPage() {
               addDebugInfo('Auto-play successful')
             })
             .catch(error => {
-              addDebugInfo(`Auto-play failed: ${error.message}`)
-              // Don't retry auto-play, let user manually control
-              setShouldAutoPlay(false)
-              setIsPlaying(false)
+              const playError = error as Error
+              addDebugInfo(`Auto-play failed: ${playError.message}`)
+              
+              // For mobile, try with cache-busting URL
+              if (isMobile) {
+                addDebugInfo('Trying mobile auto-play recovery...')
+                const cacheBustUrl = `/audio/${playlist[currentChapterIndex]}?auto=${Date.now()}`
+                audio.src = cacheBustUrl
+                audio.load()
+                
+                setTimeout(() => {
+                  audio.play()
+                    .then(() => {
+                      setIsPlaying(true)
+                      addDebugInfo('Auto-play recovery successful')
+                    })
+                    .catch(() => {
+                      addDebugInfo('Auto-play recovery failed - stopping auto-advance')
+                      setShouldAutoPlay(false)
+                      setIsPlaying(false)
+                    })
+                }, 1000)
+              } else {
+                // Don't retry auto-play on desktop, let user manually control
+                setShouldAutoPlay(false)
+                setIsPlaying(false)
+              }
             })
         } else {
           addDebugInfo(`Audio not ready (readyState: ${audio.readyState}), waiting...`)
           // Wait a bit more for the audio to load
-          setTimeout(attemptPlay, 200)
+          setTimeout(attemptPlay, isMobile ? 500 : 200)
         }
       }
       
-      // Add error event listener
-      const handleError = (e: Event) => {
-        console.error('Audio loading error:', e)
-        const errorMessage = `Audio loading failed for ${playlist[currentChapterIndex]}`
-        setAudioError(errorMessage)
-        addDebugInfo(`Audio loading error: ${e.type}`)
+      // Add error event listener for auto-play
+      const handleAutoPlayError = (e: Event) => {
+        console.error('Auto-play audio loading error:', e)
+        const errorMessage = `Auto-play failed for ${playlist[currentChapterIndex]}`
+        addDebugInfo(`Auto-play error: ${e.type}`)
         
         // For mobile, try reloading the audio with a fresh request
         if (isMobile && audio) {
-          addDebugInfo('Attempting mobile audio recovery...')
+          addDebugInfo('Attempting mobile auto-play recovery...')
           setTimeout(() => {
-            const newSrc = `/audio/${playlist[currentChapterIndex]}?t=${Date.now()}`
-            addDebugInfo(`Trying fresh URL: ${newSrc}`)
+            const newSrc = `/audio/${playlist[currentChapterIndex]}?recover=${Date.now()}`
+            addDebugInfo(`Auto-play trying fresh URL: ${newSrc}`)
             audio.src = newSrc
             audio.load()
-          }, 1000)
+            setTimeout(attemptPlay, 1000)
+          }, 500)
+        } else {
+          setShouldAutoPlay(false)
+          setIsPlaying(false)
         }
-        
-        setShouldAutoPlay(false)
-        setIsPlaying(false)
       }
       
-      // Add success listener to clear errors
-      const handleCanPlay = () => {
-        setAudioError(null)
-        addDebugInfo('Audio can play - clearing errors')
-      }
+      audio.addEventListener('error', handleAutoPlayError)
       
-      audio.addEventListener('error', handleError)
-      audio.addEventListener('canplay', handleCanPlay)
-      
-      // Start attempting to play after a short delay
-      const timer = setTimeout(attemptPlay, 300)
+      // Start attempting to play after a delay (longer for mobile)
+      const timer = setTimeout(attemptPlay, isMobile ? 800 : 300)
       
       return () => {
         clearTimeout(timer)
-        audio.removeEventListener('error', handleError)
-        audio.removeEventListener('canplay', handleCanPlay)
+        audio.removeEventListener('error', handleAutoPlayError)
       }
     } else if (!userInteracted) {
       addDebugInfo('Auto-play skipped - no user interaction yet')
+    } else if (!shouldAutoPlay) {
+      addDebugInfo('Auto-play skipped - shouldAutoPlay is false')
     }
-  }, [currentChapterIndex, shouldAutoPlay, userInteracted])
+  }, [currentChapterIndex, shouldAutoPlay, userInteracted, isMobile])
 
   const { questionIndex, bulletIndex } = getCurrentItemInfo()
 
