@@ -17,26 +17,17 @@ export default function ReadingPage() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [audioError, setAudioError] = useState<string | null>(null)
   const [userInteracted, setUserInteracted] = useState(false)
-  const [debugInfo, setDebugInfo] = useState<string[]>([])
   const [isMobile, setIsMobile] = useState(false)
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
-  // Add debug logging
-  const addDebugInfo = (message: string) => {
-    console.log(message)
-    setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${message}`])
-  }
-
   // Detect mobile device
   useEffect(() => {
     const checkMobile = () => {
       const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       setIsMobile(isMobileDevice)
-      addDebugInfo(`Device detected: ${isMobileDevice ? 'Mobile' : 'Desktop'}`)
-      addDebugInfo(`User agent: ${navigator.userAgent}`)
     }
     checkMobile()
   }, [])
@@ -49,16 +40,14 @@ export default function ReadingPage() {
         if (AudioContextClass) {
           const ctx = new AudioContextClass()
           setAudioContext(ctx)
-          addDebugInfo(`Audio context created: ${ctx.state}`)
           
           // Resume context if suspended (iOS requirement)
           if (ctx.state === 'suspended') {
             await ctx.resume()
-            addDebugInfo(`Audio context resumed: ${ctx.state}`)
           }
         }
       } catch (error) {
-        addDebugInfo(`Audio context creation failed: ${error}`)
+        console.error('Audio context creation failed:', error)
       }
     }
   }
@@ -244,15 +233,11 @@ export default function ReadingPage() {
     const currentItemId = getItemId(questionIndex, bulletIndex)
     setCompletedItems(prev => new Set([...prev, currentItemId]))
     
-    addDebugInfo(`Finishing chapter ${currentChapterIndex}, moving to next`)
-    
     if (currentChapterIndex < playlist.length - 1) {
       setShouldAutoPlay(isPlaying) // Remember if we should auto-play
       setCurrentChapterIndex(currentChapterIndex + 1)
-      addDebugInfo(`Advanced to chapter ${currentChapterIndex + 1}`)
     } else {
       // Reached the end, pause and mark as completed
-      addDebugInfo('Reached end of playlist')
       if (audioRef.current) {
         audioRef.current.pause()
       }
@@ -291,7 +276,6 @@ export default function ReadingPage() {
     // Mark user interaction for autoplay policies
     if (!userInteracted) {
       setUserInteracted(true)
-      addDebugInfo('User interaction registered')
       
       // Initialize audio context for mobile on first interaction
       if (isMobile) {
@@ -308,26 +292,20 @@ export default function ReadingPage() {
       if (isPlaying) {
         audioRef.current.pause()
         setShouldAutoPlay(false)
-        addDebugInfo('Audio paused')
       } else {
         // Clear any previous errors
         setAudioError(null)
-        addDebugInfo(`Attempting to play: ${playlist[currentChapterIndex]}`)
         
         // Check if audio source exists
         const audio = audioRef.current
-        addDebugInfo(`Audio readyState: ${audio.readyState}`)
-        addDebugInfo(`Audio networkState: ${audio.networkState}`)
-        addDebugInfo(`Current src: ${audio.currentSrc || 'no source'}`)
         
         // Mobile-specific: Ensure audio context is running
         if (isMobile && audioContext) {
           if (audioContext.state === 'suspended') {
             try {
               await audioContext.resume()
-              addDebugInfo('Audio context resumed for mobile')
             } catch (error) {
-              addDebugInfo(`Failed to resume audio context: ${error}`)
+              console.error('Failed to resume audio context:', error)
             }
           }
         }
@@ -345,12 +323,11 @@ export default function ReadingPage() {
               await playPromise
               setShouldAutoPlay(true)
               setIsPlaying(true)
-              addDebugInfo('Playback started successfully')
             }
           } catch (error) {
             console.error('Audio play failed:', error)
             const audioError = error as Error
-            addDebugInfo(`Playback failed: ${audioError.name} - ${audioError.message}`)
+            console.error('Audio error:', audioError)
             
             // Mobile-specific error handling
             if (isMobile) {
@@ -368,7 +345,6 @@ export default function ReadingPage() {
             // Try alternative approach with longer delay for mobile
             const retryDelay = isMobile ? 2000 : 1000
             setTimeout(async () => {
-              addDebugInfo('Retrying audio playback...')
               audio.load()
               
               setTimeout(async () => {
@@ -377,10 +353,9 @@ export default function ReadingPage() {
                   setShouldAutoPlay(true)
                   setIsPlaying(true)
                   setAudioError(null)
-                  addDebugInfo('Retry successful')
                 } catch (retryError) {
                   const typedRetryError = retryError as Error
-                  addDebugInfo(`Retry failed: ${typedRetryError.message}`)
+                  console.error('Retry failed:', typedRetryError)
                   setAudioError(`Unable to play audio on this device. Try using headphones or checking volume settings.`)
                 }
               }, isMobile ? 300 : 100)
@@ -418,33 +393,29 @@ export default function ReadingPage() {
     const audio = audioRef.current
     if (audio) {
       const handleEnded = () => {
-        addDebugInfo('Audio ended event fired')
         playNextChapter()
       }
       const handlePause = () => {
         if (!shouldAutoPlay) {
           setIsPlaying(false)
-          addDebugInfo('Audio paused (not by auto-advance)')
         }
       }
       const handlePlay = () => {
         setIsPlaying(true)
-        addDebugInfo('Audio play event confirmed')
       }
       const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
       
       // Additional mobile-specific events
       const handleCanPlay = () => {
-        addDebugInfo('Audio can play - ready for playback')
         setAudioError(null)
       }
       
       const handleWaiting = () => {
-        addDebugInfo('Audio waiting for more data')
+        // No additional action needed
       }
       
       const handleStalled = () => {
-        addDebugInfo('Audio stalled - network issues')
+        // No additional action needed
       }
 
       audio.addEventListener('ended', handleEnded)
@@ -455,8 +426,6 @@ export default function ReadingPage() {
       audio.addEventListener('waiting', handleWaiting)
       audio.addEventListener('stalled', handleStalled)
 
-      addDebugInfo(`Event listeners attached for chapter ${currentChapterIndex}`)
-
       return () => {
         audio.removeEventListener('ended', handleEnded)
         audio.removeEventListener('pause', handlePause)
@@ -465,7 +434,6 @@ export default function ReadingPage() {
         audio.removeEventListener('canplay', handleCanPlay)
         audio.removeEventListener('waiting', handleWaiting)
         audio.removeEventListener('stalled', handleStalled)
-        addDebugInfo(`Event listeners cleaned up for chapter ${currentChapterIndex}`)
       }
     }
   }, [currentChapterIndex, isPlaying, shouldAutoPlay])
@@ -474,26 +442,18 @@ export default function ReadingPage() {
   useEffect(() => {
     const audio = audioRef.current
     if (audio && shouldAutoPlay && userInteracted) {
-      addDebugInfo(`Auto-play effect triggered for chapter ${currentChapterIndex}`)
-      
       // Better loading and error handling for production
       const attemptPlay = () => {
-        addDebugInfo(`Checking audio readiness: readyState=${audio.readyState}, networkState=${audio.networkState}`)
-        
         if (audio.readyState >= 2) { // HAVE_CURRENT_DATA or higher
-          addDebugInfo('Audio ready, attempting auto-play')
           audio.play()
             .then(() => {
               setIsPlaying(true)
-              addDebugInfo('Auto-play successful')
             })
             .catch(error => {
-              const playError = error as Error
-              addDebugInfo(`Auto-play failed: ${playError.message}`)
+              console.error('Auto-play failed:', error)
               
               // For mobile, try with cache-busting URL
               if (isMobile) {
-                addDebugInfo('Trying mobile auto-play recovery...')
                 const cacheBustUrl = `/audio/${playlist[currentChapterIndex]}?auto=${Date.now()}`
                 audio.src = cacheBustUrl
                 audio.load()
@@ -502,10 +462,8 @@ export default function ReadingPage() {
                   audio.play()
                     .then(() => {
                       setIsPlaying(true)
-                      addDebugInfo('Auto-play recovery successful')
                     })
                     .catch(() => {
-                      addDebugInfo('Auto-play recovery failed - stopping auto-advance')
                       setShouldAutoPlay(false)
                       setIsPlaying(false)
                     })
@@ -518,10 +476,8 @@ export default function ReadingPage() {
             })
         } else if (audio.readyState === 0) {
           // Audio hasn't started loading yet
-          addDebugInfo(`Audio not loaded yet (readyState: 0), retrying...`)
           setTimeout(attemptPlay, isMobile ? 800 : 300)
         } else {
-          addDebugInfo(`Audio loading (readyState: ${audio.readyState}), waiting...`)
           // Wait a bit more for the audio to load
           setTimeout(attemptPlay, isMobile ? 600 : 200)
         }
@@ -530,14 +486,11 @@ export default function ReadingPage() {
       // Add error event listener for auto-play
       const handleAutoPlayError = (e: Event) => {
         console.error('Auto-play audio loading error:', e)
-        addDebugInfo(`Auto-play error: ${e.type}`)
         
         // For mobile, try reloading the audio with a fresh request
         if (isMobile && audio) {
-          addDebugInfo('Attempting mobile auto-play recovery...')
           setTimeout(() => {
             const newSrc = `/audio/${playlist[currentChapterIndex]}?recover=${Date.now()}`
-            addDebugInfo(`Auto-play trying fresh URL: ${newSrc}`)
             audio.src = newSrc
             audio.load()
             setTimeout(attemptPlay, 1500)
@@ -558,10 +511,6 @@ export default function ReadingPage() {
         clearTimeout(timer)
         audio.removeEventListener('error', handleAutoPlayError)
       }
-    } else if (!userInteracted) {
-      addDebugInfo('Auto-play skipped - no user interaction yet')
-    } else if (!shouldAutoPlay) {
-      addDebugInfo('Auto-play skipped - shouldAutoPlay is false')
     }
   }, [currentChapterIndex, shouldAutoPlay, userInteracted, isMobile])
 
@@ -570,13 +519,10 @@ export default function ReadingPage() {
     const audio = audioRef.current
     if (audio) {
       const newSrc = `/audio/${playlist[currentChapterIndex]}`
-      addDebugInfo(`Setting audio source to: ${newSrc}`)
       
       // Update the audio source
       audio.src = newSrc
       audio.load()
-      
-      addDebugInfo(`Audio source updated, readyState: ${audio.readyState}`)
     }
   }, [currentChapterIndex])
 
@@ -672,22 +618,17 @@ export default function ReadingPage() {
             <div className="flex gap-2 mt-2">
               <button 
                 onClick={() => {
-                  addDebugInfo('Manual audio test started')
                   const testUrl = `${window.location.origin}/audio/${playlist[currentChapterIndex]}`
-                  addDebugInfo(`Testing URL: ${testUrl}`)
                   
                   fetch(testUrl, { method: 'HEAD' })
                     .then(response => {
-                      addDebugInfo(`Fetch response: ${response.status} ${response.statusText}`)
                       if (response.ok) {
                         setAudioError(null)
-                        addDebugInfo('Audio file exists and is accessible')
                       } else {
                         setAudioError(`Audio file not found (${response.status})`)
                       }
                     })
                     .catch(error => {
-                      addDebugInfo(`Fetch error: ${error.message}`)
                       setAudioError('Network error - cannot reach audio files')
                     })
                 }}
@@ -697,14 +638,12 @@ export default function ReadingPage() {
               </button>
               <button 
                 onClick={() => {
-                  addDebugInfo('Manual retry initiated')
                   setAudioError(null)
                   
                   if (audioRef.current) {
                     const audio = audioRef.current
                     // Use cache-busting URL
                     const cacheBustUrl = `/audio/${playlist[currentChapterIndex]}?retry=${Date.now()}`
-                    addDebugInfo(`Retry with: ${cacheBustUrl}`)
                     
                     audio.src = cacheBustUrl
                     audio.load()
@@ -712,13 +651,9 @@ export default function ReadingPage() {
                     setTimeout(() => {
                       audio.play()
                         .then(() => {
-                          addDebugInfo('Manual retry successful')
-                          setIsPlaying(true)
-                          setShouldAutoPlay(true)
                         })
                         .catch(retryError => {
                           const typedError = retryError as Error
-                          addDebugInfo(`Manual retry failed: ${typedError.message}`)
                           setAudioError('Manual retry failed. Try using headphones or checking device volume.')
                         })
                     }, 500)
@@ -728,83 +663,6 @@ export default function ReadingPage() {
               >
                 Force Retry
               </button>
-            </div>
-          </div>
-        )}
-        
-        {/* Debug Panel - Only show if there's debug info */}
-        {debugInfo.length > 0 && (
-          <div className="bg-blue-500/20 border border-blue-500/50 rounded-lg p-4 mb-4">
-            <div className="text-blue-200 text-sm mb-2">Debug Information</div>
-            <div className="text-white text-xs space-y-1">
-              {debugInfo.map((info, index) => (
-                <div key={index}>{info}</div>
-              ))}
-            </div>
-            <div className="flex gap-2 mt-2">
-              <button 
-                onClick={() => setDebugInfo([])}
-                className="px-3 py-1 bg-blue-500/30 text-white text-xs rounded"
-              >
-                Clear Debug
-              </button>
-              {isMobile && (
-                <button 
-                  onClick={async () => {
-                    addDebugInfo('Starting mobile audio test...')
-                    
-                    // Test network connectivity first
-                    try {
-                      const networkTest = await fetch('/audio/01.mp3', { method: 'HEAD' })
-                      addDebugInfo(`Network test: ${networkTest.status} ${networkTest.statusText}`)
-                      addDebugInfo(`Content-Type: ${networkTest.headers.get('content-type') || 'unknown'}`)
-                      addDebugInfo(`Content-Length: ${networkTest.headers.get('content-length') || 'unknown'}`)
-                    } catch (networkError) {
-                      addDebugInfo(`Network test failed: ${networkError}`)
-                    }
-                    
-                    // Test mobile audio capabilities
-                    const audio = new Audio()
-                    addDebugInfo(`Audio support: ${!!audio}`)
-                    addDebugInfo(`Can play MP3: ${audio.canPlayType('audio/mpeg')}`)
-                    
-                    // Test direct audio loading
-                    try {
-                      const testAudio = new Audio('/audio/01.mp3')
-                      testAudio.addEventListener('loadstart', () => addDebugInfo('Test audio: load started'))
-                      testAudio.addEventListener('canplay', () => addDebugInfo('Test audio: can play'))
-                      testAudio.addEventListener('error', (e) => addDebugInfo(`Test audio error: ${e.type}`))
-                      testAudio.load()
-                    } catch (audioError) {
-                      addDebugInfo(`Direct audio test failed: ${audioError}`)
-                    }
-                    
-                    // Test audio context
-                    try {
-                      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
-                      if (AudioContextClass) {
-                        const ctx = new AudioContextClass()
-                        addDebugInfo(`Audio context state: ${ctx.state}`)
-                        
-                        if (ctx.state === 'suspended') {
-                          await ctx.resume()
-                          addDebugInfo(`Audio context after resume: ${ctx.state}`)
-                        }
-                        ctx.close()
-                      }
-                    } catch (error) {
-                      addDebugInfo(`Audio context test failed: ${error}`)
-                    }
-                    
-                    // Test device info
-                    addDebugInfo(`Connection: ${(navigator as any).connection?.effectiveType || 'unknown'}`)
-                    addDebugInfo(`Online: ${navigator.onLine}`)
-                  }}
-                  className="px-3 py-1 bg-green-500/30 text-white text-xs rounded"
-                >
-                  Mobile Test
-                </button>
-              )}
             </div>
           </div>
         )}
@@ -853,14 +711,6 @@ export default function ReadingPage() {
         playsInline
         webkit-playsinline="true"
         controls={false}
-        onLoadStart={() => addDebugInfo('Audio load started')}
-        onCanPlay={() => addDebugInfo('Audio can play')}
-        onLoadedData={() => addDebugInfo('Audio data loaded')}
-        onError={(e) => addDebugInfo(`Audio element error: ${e.type}`)}
-        onPlay={() => addDebugInfo('Audio play event fired')}
-        onPause={() => addDebugInfo('Audio pause event fired')}
-        onStalled={() => addDebugInfo('Audio stalled')}
-        onWaiting={() => addDebugInfo('Audio waiting for data')}
       >
         <source src={`/audio/${playlist[currentChapterIndex]}`} type="audio/mpeg" />
         Your browser does not support the audio element.
