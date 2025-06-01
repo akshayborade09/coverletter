@@ -169,7 +169,7 @@ export default function SummaryPage() {
       </div>
 
       {/* Content */}
-      <div className="px-4 space-y-3 pb-8">
+      <div className="px-4 space-y-3 pb-32">
         {summaryData.map((section, index) => (
           <div 
             key={index}

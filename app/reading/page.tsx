@@ -15,6 +15,7 @@ export default function ReadingPage() {
   const [isCompleted, setIsCompleted] = useState(false)
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set())
   const [isLoaded, setIsLoaded] = useState(false)
+  const [audioError, setAudioError] = useState<string | null>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -250,10 +251,35 @@ export default function ReadingPage() {
         audioRef.current.pause()
         setShouldAutoPlay(false)
       } else {
+        // Clear any previous errors
+        setAudioError(null)
+        
+        // Better error handling for production
         audioRef.current.play()
-        setShouldAutoPlay(true)
+          .then(() => {
+            setShouldAutoPlay(true)
+            setIsPlaying(true)
+          })
+          .catch(error => {
+            console.error('Audio play failed:', error)
+            setAudioError(`Playback failed: ${error.message}`)
+            
+            // Try to load the audio first
+            audioRef.current?.load()
+            setTimeout(() => {
+              audioRef.current?.play()
+                .then(() => {
+                  setShouldAutoPlay(true)
+                  setIsPlaying(true)
+                  setAudioError(null)
+                })
+                .catch(err => {
+                  console.error('Audio play retry failed:', err)
+                  setAudioError(`Playback failed: Please check your internet connection and try again.`)
+                })
+            }, 1000)
+          })
       }
-      setIsPlaying(!isPlaying)
     }
   }
 
@@ -312,23 +338,59 @@ export default function ReadingPage() {
   useEffect(() => {
     const audio = audioRef.current
     if (audio && shouldAutoPlay) {
-      // Wait for the audio to load and then play
+      // Better loading and error handling for production
       const attemptPlay = () => {
         if (audio.readyState >= 2) { // HAVE_CURRENT_DATA or higher
-          audio.play().catch(error => {
-            console.log('Auto-play failed:', error)
-            setShouldAutoPlay(false)
-          })
+          audio.play()
+            .then(() => {
+              setIsPlaying(true)
+            })
+            .catch(error => {
+              console.log('Auto-play failed:', error)
+              // Try loading the audio first
+              audio.load()
+              setTimeout(() => {
+                audio.play()
+                  .then(() => {
+                    setIsPlaying(true)
+                  })
+                  .catch(err => {
+                    console.error('Auto-play retry failed:', err)
+                    setShouldAutoPlay(false)
+                    setIsPlaying(false)
+                  })
+              }, 500)
+            })
         } else {
           // Wait a bit more for the audio to load
-          setTimeout(attemptPlay, 50)
+          setTimeout(attemptPlay, 100)
         }
       }
       
-      // Start attempting to play after a short delay
-      const timer = setTimeout(attemptPlay, 100)
+      // Add error event listener
+      const handleError = (e: Event) => {
+        console.error('Audio loading error:', e)
+        setAudioError(`Failed to load audio file: ${playlist[currentChapterIndex]}`)
+        setShouldAutoPlay(false)
+        setIsPlaying(false)
+      }
       
-      return () => clearTimeout(timer)
+      // Add success listener to clear errors
+      const handleCanPlay = () => {
+        setAudioError(null)
+      }
+      
+      audio.addEventListener('error', handleError)
+      audio.addEventListener('canplay', handleCanPlay)
+      
+      // Start attempting to play after a short delay
+      const timer = setTimeout(attemptPlay, 200)
+      
+      return () => {
+        clearTimeout(timer)
+        audio.removeEventListener('error', handleError)
+        audio.removeEventListener('canplay', handleCanPlay)
+      }
     }
   }, [currentChapterIndex, shouldAutoPlay])
 
@@ -413,6 +475,35 @@ export default function ReadingPage() {
 
       {/* Content */}
       <div ref={contentRef} className="px-4 pb-32 space-y-8">
+        {/* Audio Error Message */}
+        {audioError && (
+          <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-4">
+            <div className="text-red-200 text-sm mb-2">Audio Loading Error</div>
+            <div className="text-white text-sm">{audioError}</div>
+            <div className="text-red-200 text-xs mt-2">
+              Try refreshing the page or check your internet connection.
+            </div>
+            <button 
+              onClick={() => {
+                console.log('Testing audio path:', `/audio/${playlist[currentChapterIndex]}`)
+                const testAudio = new Audio(`/audio/${playlist[currentChapterIndex]}`)
+                testAudio.addEventListener('canplay', () => {
+                  console.log('Audio file loaded successfully')
+                  setAudioError(null)
+                })
+                testAudio.addEventListener('error', (e) => {
+                  console.error('Audio test failed:', e)
+                  setAudioError('Audio file not found or cannot be loaded')
+                })
+                testAudio.load()
+              }}
+              className="mt-2 px-3 py-1 bg-red-500/30 text-white text-xs rounded"
+            >
+              Test Audio
+            </button>
+          </div>
+        )}
+        
         {questionsData.map((item, index) => (
           <div 
             key={`qa-${index}`} 
@@ -452,11 +543,14 @@ export default function ReadingPage() {
       {/* Hidden Audio Element */}
       <audio
         ref={audioRef}
-        preload="metadata"
+        preload="auto"
         className="hidden"
         key={currentChapterIndex}
+        crossOrigin="anonymous"
       >
         <source src={`/audio/${playlist[currentChapterIndex]}`} type="audio/mpeg" />
+        <source src={`/audio/${playlist[currentChapterIndex].replace('.mp3', '.m4a')}`} type="audio/mp4" />
+        <source src={`/audio/${playlist[currentChapterIndex].replace('.mp3', '.ogg')}`} type="audio/ogg" />
         Your browser does not support the audio element.
       </audio>
 
@@ -508,4 +602,5 @@ export default function ReadingPage() {
     </div>
   )
 }
+
 
