@@ -469,8 +469,21 @@ export default function ReadingPage() {
       // Add error event listener
       const handleError = (e: Event) => {
         console.error('Audio loading error:', e)
-        setAudioError(`Failed to load audio file: ${playlist[currentChapterIndex]}`)
+        const errorMessage = `Audio loading failed for ${playlist[currentChapterIndex]}`
+        setAudioError(errorMessage)
         addDebugInfo(`Audio loading error: ${e.type}`)
+        
+        // For mobile, try reloading the audio with a fresh request
+        if (isMobile && audio) {
+          addDebugInfo('Attempting mobile audio recovery...')
+          setTimeout(() => {
+            const newSrc = `/audio/${playlist[currentChapterIndex]}?t=${Date.now()}`
+            addDebugInfo(`Trying fresh URL: ${newSrc}`)
+            audio.src = newSrc
+            audio.load()
+          }, 1000)
+        }
+        
         setShouldAutoPlay(false)
         setIsPlaying(false)
       }
@@ -586,31 +599,66 @@ export default function ReadingPage() {
             <div className="text-red-200 text-xs mt-2">
               Try refreshing the page or check your internet connection.
             </div>
-            <button 
-              onClick={() => {
-                addDebugInfo('Manual audio test started')
-                const testUrl = `${window.location.origin}/audio/${playlist[currentChapterIndex]}`
-                addDebugInfo(`Testing URL: ${testUrl}`)
-                
-                fetch(testUrl, { method: 'HEAD' })
-                  .then(response => {
-                    addDebugInfo(`Fetch response: ${response.status} ${response.statusText}`)
-                    if (response.ok) {
-                      setAudioError(null)
-                      addDebugInfo('Audio file exists and is accessible')
-                    } else {
-                      setAudioError(`Audio file not found (${response.status})`)
-                    }
-                  })
-                  .catch(error => {
-                    addDebugInfo(`Fetch error: ${error.message}`)
-                    setAudioError('Network error - cannot reach audio files')
-                  })
-              }}
-              className="mt-2 px-3 py-1 bg-red-500/30 text-white text-xs rounded"
-            >
-              Test Audio
-            </button>
+            <div className="flex gap-2 mt-2">
+              <button 
+                onClick={() => {
+                  addDebugInfo('Manual audio test started')
+                  const testUrl = `${window.location.origin}/audio/${playlist[currentChapterIndex]}`
+                  addDebugInfo(`Testing URL: ${testUrl}`)
+                  
+                  fetch(testUrl, { method: 'HEAD' })
+                    .then(response => {
+                      addDebugInfo(`Fetch response: ${response.status} ${response.statusText}`)
+                      if (response.ok) {
+                        setAudioError(null)
+                        addDebugInfo('Audio file exists and is accessible')
+                      } else {
+                        setAudioError(`Audio file not found (${response.status})`)
+                      }
+                    })
+                    .catch(error => {
+                      addDebugInfo(`Fetch error: ${error.message}`)
+                      setAudioError('Network error - cannot reach audio files')
+                    })
+                }}
+                className="px-3 py-1 bg-red-500/30 text-white text-xs rounded"
+              >
+                Test Audio
+              </button>
+              <button 
+                onClick={() => {
+                  addDebugInfo('Manual retry initiated')
+                  setAudioError(null)
+                  
+                  if (audioRef.current) {
+                    const audio = audioRef.current
+                    // Use cache-busting URL
+                    const cacheBustUrl = `/audio/${playlist[currentChapterIndex]}?retry=${Date.now()}`
+                    addDebugInfo(`Retry with: ${cacheBustUrl}`)
+                    
+                    audio.src = cacheBustUrl
+                    audio.load()
+                    
+                    setTimeout(() => {
+                      audio.play()
+                        .then(() => {
+                          addDebugInfo('Manual retry successful')
+                          setIsPlaying(true)
+                          setShouldAutoPlay(true)
+                        })
+                        .catch(retryError => {
+                          const typedError = retryError as Error
+                          addDebugInfo(`Manual retry failed: ${typedError.message}`)
+                          setAudioError('Manual retry failed. Try using headphones or checking device volume.')
+                        })
+                    }, 500)
+                  }
+                }}
+                className="px-3 py-1 bg-orange-500/30 text-white text-xs rounded"
+              >
+                Force Retry
+              </button>
+            </div>
           </div>
         )}
         
@@ -635,10 +683,31 @@ export default function ReadingPage() {
                   onClick={async () => {
                     addDebugInfo('Starting mobile audio test...')
                     
+                    // Test network connectivity first
+                    try {
+                      const networkTest = await fetch('/audio/01.mp3', { method: 'HEAD' })
+                      addDebugInfo(`Network test: ${networkTest.status} ${networkTest.statusText}`)
+                      addDebugInfo(`Content-Type: ${networkTest.headers.get('content-type') || 'unknown'}`)
+                      addDebugInfo(`Content-Length: ${networkTest.headers.get('content-length') || 'unknown'}`)
+                    } catch (networkError) {
+                      addDebugInfo(`Network test failed: ${networkError}`)
+                    }
+                    
                     // Test mobile audio capabilities
                     const audio = new Audio()
                     addDebugInfo(`Audio support: ${!!audio}`)
                     addDebugInfo(`Can play MP3: ${audio.canPlayType('audio/mpeg')}`)
+                    
+                    // Test direct audio loading
+                    try {
+                      const testAudio = new Audio('/audio/01.mp3')
+                      testAudio.addEventListener('loadstart', () => addDebugInfo('Test audio: load started'))
+                      testAudio.addEventListener('canplay', () => addDebugInfo('Test audio: can play'))
+                      testAudio.addEventListener('error', (e) => addDebugInfo(`Test audio error: ${e.type}`))
+                      testAudio.load()
+                    } catch (audioError) {
+                      addDebugInfo(`Direct audio test failed: ${audioError}`)
+                    }
                     
                     // Test audio context
                     try {
@@ -657,8 +726,9 @@ export default function ReadingPage() {
                       addDebugInfo(`Audio context test failed: ${error}`)
                     }
                     
-                    // Test volume
-                    addDebugInfo(`Device volume info: Media devices: ${!!navigator.mediaDevices}`)
+                    // Test device info
+                    addDebugInfo(`Connection: ${(navigator as any).connection?.effectiveType || 'unknown'}`)
+                    addDebugInfo(`Online: ${navigator.onLine}`)
                   }}
                   className="px-3 py-1 bg-green-500/30 text-white text-xs rounded"
                 >
