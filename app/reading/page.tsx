@@ -478,6 +478,8 @@ export default function ReadingPage() {
       
       // Better loading and error handling for production
       const attemptPlay = () => {
+        addDebugInfo(`Checking audio readiness: readyState=${audio.readyState}, networkState=${audio.networkState}`)
+        
         if (audio.readyState >= 2) { // HAVE_CURRENT_DATA or higher
           addDebugInfo('Audio ready, attempting auto-play')
           audio.play()
@@ -507,24 +509,27 @@ export default function ReadingPage() {
                       setShouldAutoPlay(false)
                       setIsPlaying(false)
                     })
-                }, 1000)
+                }, 1500)
               } else {
                 // Don't retry auto-play on desktop, let user manually control
                 setShouldAutoPlay(false)
                 setIsPlaying(false)
               }
             })
+        } else if (audio.readyState === 0) {
+          // Audio hasn't started loading yet
+          addDebugInfo(`Audio not loaded yet (readyState: 0), retrying...`)
+          setTimeout(attemptPlay, isMobile ? 800 : 300)
         } else {
-          addDebugInfo(`Audio not ready (readyState: ${audio.readyState}), waiting...`)
+          addDebugInfo(`Audio loading (readyState: ${audio.readyState}), waiting...`)
           // Wait a bit more for the audio to load
-          setTimeout(attemptPlay, isMobile ? 500 : 200)
+          setTimeout(attemptPlay, isMobile ? 600 : 200)
         }
       }
       
       // Add error event listener for auto-play
       const handleAutoPlayError = (e: Event) => {
         console.error('Auto-play audio loading error:', e)
-        const errorMessage = `Auto-play failed for ${playlist[currentChapterIndex]}`
         addDebugInfo(`Auto-play error: ${e.type}`)
         
         // For mobile, try reloading the audio with a fresh request
@@ -535,7 +540,7 @@ export default function ReadingPage() {
             addDebugInfo(`Auto-play trying fresh URL: ${newSrc}`)
             audio.src = newSrc
             audio.load()
-            setTimeout(attemptPlay, 1000)
+            setTimeout(attemptPlay, 1500)
           }, 500)
         } else {
           setShouldAutoPlay(false)
@@ -545,8 +550,9 @@ export default function ReadingPage() {
       
       audio.addEventListener('error', handleAutoPlayError)
       
-      // Start attempting to play after a delay (longer for mobile)
-      const timer = setTimeout(attemptPlay, isMobile ? 800 : 300)
+      // Start attempting to play after a longer delay to allow source loading
+      const initialDelay = isMobile ? 1200 : 500
+      const timer = setTimeout(attemptPlay, initialDelay)
       
       return () => {
         clearTimeout(timer)
@@ -558,6 +564,21 @@ export default function ReadingPage() {
       addDebugInfo('Auto-play skipped - shouldAutoPlay is false')
     }
   }, [currentChapterIndex, shouldAutoPlay, userInteracted, isMobile])
+
+  // Effect to update audio source when chapter changes
+  useEffect(() => {
+    const audio = audioRef.current
+    if (audio) {
+      const newSrc = `/audio/${playlist[currentChapterIndex]}`
+      addDebugInfo(`Setting audio source to: ${newSrc}`)
+      
+      // Update the audio source
+      audio.src = newSrc
+      audio.load()
+      
+      addDebugInfo(`Audio source updated, readyState: ${audio.readyState}`)
+    }
+  }, [currentChapterIndex])
 
   const { questionIndex, bulletIndex } = getCurrentItemInfo()
 
@@ -829,7 +850,6 @@ export default function ReadingPage() {
         ref={audioRef}
         preload="none"
         className="hidden"
-        key={currentChapterIndex}
         playsInline
         webkit-playsinline="true"
         controls={false}
