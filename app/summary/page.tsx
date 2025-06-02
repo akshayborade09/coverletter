@@ -12,46 +12,74 @@ interface SummarySection {
 
 const summaryData: SummarySection[] = [
   {
-    heading: "Who I Am",
+    heading: "Profile",
     content: [
-      "Associate Director at Ola with hands-on leadership experience across consumer platforms (Ola), fintech (CoverSure), and parenting tech (The ParentInc). I build working prototypes, not just pretty designs."
+      "Name: Akshay Borhade",
+      "Designation: Associate Director Product Design", 
+      "Current Company: OLA"
     ],
     isBulleted: false
   },
   {
-    heading: "Why Noon Needs Me",
+    heading: "Background & Experience",
     content: [
-      "E-commerce complexity is exactly what I've been solving at Ola - millions of users, complex journeys, direct revenue impact",
-      "I've made complicated stuff simple (if you can make insurance easy, you can make anything easy)",
-      "Built products across diverse markets in Southeast Asia where user trust isn't optional"
+      "Currently Associate Director at Ola with experience across consumer platforms, fintech (CoverSure), and parenting platforms (The ParentInc)",
+      "Has led teams, scaled design systems, and built products used by millions",
+      "Progressed from individual contributor to strategic leader while maintaining hands-on skills"
     ],
     isBulleted: true
   },
   {
-    heading: "What Makes Me Different",
+    heading: "Key Achievements",
     content: [
-      "Spot bad user flows instantly and know exactly how to fix them",
-      "Translate business gibberish into designs that actually work",
-      "Cross-industry pattern recognition - I steal the best ideas and make them work in new contexts",
-      "Built AI workflows that turn designs into working code"
+      "CoverSure Achievement: Designed Motor Club feature achieving 778% user growth (2.8K to 24.6K users), 99% Day 1 retention, 67% Day 90 retention, 40% MAU increase (5K to 7K), and 280K total session minutes",
+      "The ParentInc Achievement: Solved critical Day 0 retention issue where 40%+ users were uninstalling TAP App immediately, successfully improving DAU and retention across Day 1, Day 7, and Day 30 metrics"
     ],
     isBulleted: true
   },
   {
-    heading: "How I Work",
+    heading: "Value Proposition for Noon",
     content: [
-      "Collaborate with anyone regardless of age - best ideas come from everywhere",
-      "Mentor through real projects, not training rooms",
-      "Stay hands-on while leading - I don't just manage, I create",
-      "Use AI to automate boring stuff so I can focus on creative problems"
+      "Brings systematic problem-solving approach and ability to build engaging user experiences",
+      "Cross-industry experience allows pattern recognition and solution adaptation",
+      "Can translate complex business needs into simple, user-friendly interfaces",
+      "Excited by e-commerce complexity and direct business impact"
     ],
     isBulleted: true
   },
   {
-    heading: "My Vision for Noon",
+    heading: "Leadership & Collaboration Style",
     content: [
-      "Year 1: Fix obvious issues, build team trust, improve user metrics",
-      "Year 2-3: Own major initiatives, shape product strategy, grow world-class design team"
+      "Believes in collaborative, egalitarian approach rather than strict hierarchies",
+      "Willing to take direction from younger managers while contributing senior expertise",
+      "Emphasizes mutual respect and shared goals over seniority"
+    ],
+    isBulleted: true
+  },
+  {
+    heading: "Growth Vision (2-3 years)",
+    content: [
+      "Year 1: Improve platform navigation and build cross-team relationships",
+      "Later: Lead major product projects and mentor junior designers",
+      "Long-term: Become strategic design leader influencing product direction"
+    ],
+    isBulleted: true
+  },
+  {
+    heading: "Mentoring & Innovation Approach",
+    content: [
+      "Teaches through real project involvement rather than separate training",
+      "Leverages AI tools to create efficient workflows (Figma to code generation, automated testing)",
+      "Focuses on AI that enhances human creativity rather than replacing it"
+    ],
+    isBulleted: true
+  },
+  {
+    heading: "Career Trajectory",
+    content: [
+      "Steady growth from basic design tasks to strategic leadership",
+      "Transformation projects across multiple industries", 
+      "Emphasis on solving increasingly complex problems while maintaining execution excellence"
     ],
     isBulleted: true
   }
@@ -70,7 +98,7 @@ export default function SummaryPage() {
   }, [])
 
   const handleBack = () => {
-    router.back()
+    router.push('/')
   }
 
   const handleShare = async () => {
@@ -173,7 +201,7 @@ export default function SummaryPage() {
         {summaryData.map((section, index) => (
           <div 
             key={index}
-            className={`self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4 transition-all duration-700 ease-out ${
+            className={`w-full p-4 rounded-3xl flex flex-col justify-center items-start gap-4 transition-all duration-700 ease-out ${
               isLoaded 
                 ? 'opacity-100 translate-y-0' 
                 : 'opacity-0 translate-y-8'
@@ -199,7 +227,7 @@ export default function SummaryPage() {
                 ))
               ) : (
                 section.content.map((item, itemIndex) => (
-                  <div key={itemIndex} className="mb-2 last:mb-0">
+                  <div key={itemIndex} className="mb-2 last:mb-0 w-full">
                     {item}
                   </div>
                 ))

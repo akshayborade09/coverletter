@@ -1377,6 +1377,9 @@ body{
 .bg-muted\/50{
   background-color: hsl(var(--muted) / 0.5);
 }
+.bg-orange-500\/30{
+  background-color: rgb(249 115 22 / 0.3);
+}
 .bg-popover{
   background-color: hsl(var(--popover));
 }
@@ -1936,6 +1939,9 @@ body{
 }
 .ease-out{
   animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+.running{
+  animation-play-state: running;
 }
 .\[--base-color\:\#a1a1aa\]{
   --base-color: #a1a1aa;

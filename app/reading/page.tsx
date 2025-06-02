@@ -374,7 +374,7 @@ export default function ReadingPage() {
     setHasReachedLastSection(false)
     setIsCompleted(false)
     setCompletedItems(new Set())
-    router.back()
+    router.push('/')
   }
 
   const handleSummarise = () => {
