@@ -374,7 +374,7 @@ export default function ReadingPage() {
     setHasReachedLastSection(false)
     setIsCompleted(false)
     setCompletedItems(new Set())
-    router.push('/')
+    router.back()
   }
 
   const handleSummarise = () => {
@@ -668,8 +668,8 @@ export default function ReadingPage() {
         )}
         
         {questionsData.map((item, index) => (
-          <div 
-            key={`qa-${index}`} 
+            <div 
+              key={`qa-${index}`} 
             className={`space-y-4 transition-all duration-700 ease-out ${
               isLoaded 
                 ? 'opacity-100 translate-y-0' 
@@ -678,14 +678,14 @@ export default function ReadingPage() {
             style={{
               transitionDelay: `${index * 150}ms`
             }}
-          >
-            <div 
+            >
+              <div 
               data-question-index={index}
               className={`text-2xl leading-tight font-normal transition-colors ${getQuestionColorClass(index)}`}
-            >
-              {item.question}
-            </div>
-            
+              >
+                {item.question}
+              </div>
+              
             <div className="text-white/90 text-2xl leading-relaxed font-light">
               {item.answer.map((bulletPoint, bulletIdx) => (
                 <div 
@@ -696,7 +696,7 @@ export default function ReadingPage() {
                 >
                   <span className="mr-2 flex-shrink-0">•</span>
                   <span className="flex-1">{bulletPoint}</span>
-                </div>
+                    </div>
               ))}
             </div>
           </div>

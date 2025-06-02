@@ -12,74 +12,76 @@ interface SummarySection {
 
 const summaryData: SummarySection[] = [
   {
-    heading: "Profile",
+    heading: "Who I Am",
     content: [
-      "Name: Akshay Borhade",
-      "Designation: Associate Director Product Design", 
-      "Current Company: OLA"
+      "Associate Director Product Design at OLA with hands-on leadership experience juggling strategy while still designing the actual experience people touch. My career spans chaos: ride-sharing madness, AI assistants, insurance nightmares at CoverSure, parenting app drama at The ParentInc. I don't just ship designs - I build prototypes that actually work so developers don't hate me."
     ],
     isBulleted: false
   },
   {
-    heading: "Background & Experience",
+    heading: "Why I'm the Right Fit for Noon",
     content: [
-      "Currently Associate Director at Ola with experience across consumer platforms, fintech (CoverSure), and parenting platforms (The ParentInc)",
-      "Has led teams, scaled design systems, and built products used by millions",
-      "Progressed from individual contributor to strategic leader while maintaining hands-on skills"
+      "I've been living this exact challenge at Ola - juggling strategy while still designing the actual experience people touch",
+      "My wins: Turned CoverSure's Motor Club from 2.8K to 24.6K users (778% growth!), saved The ParentInc from their brutal 40% same-day uninstall problem",
+      "I only work on products where if users don't trust you, you're dead"
     ],
     isBulleted: true
   },
   {
-    heading: "Key Achievements",
+    heading: "Why Noon Makes Perfect Sense",
     content: [
-      "CoverSure Achievement: Designed Motor Club feature achieving 778% user growth (2.8K to 24.6K users), 99% Day 1 retention, 67% Day 90 retention, 40% MAU increase (5K to 7K), and 280K total session minutes",
-      "The ParentInc Achievement: Solved critical Day 0 retention issue where 40%+ users were uninstalling TAP App immediately, successfully improving DAU and retention across Day 1, Day 7, and Day 30 metrics"
+      "E-commerce is basically my daily life at Ola - millions of people, complex flows, everyone has opinions",
+      "If I can make insurance feel simple at CoverSure, I can definitely handle e-commerce complexity",
+      "The ParentInc taught me that good design works across cultures (designed for all of Southeast Asia)"
     ],
     isBulleted: true
   },
   {
-    heading: "Value Proposition for Noon",
+    heading: "What I Actually Bring",
     content: [
-      "Brings systematic problem-solving approach and ability to build engaging user experiences",
-      "Cross-industry experience allows pattern recognition and solution adaptation",
-      "Can translate complex business needs into simple, user-friendly interfaces",
-      "Excited by e-commerce complexity and direct business impact"
+      "I've seen enough patterns to know what works and what's just trendy nonsense",
+      "That gut feeling when a user flow is about to make people rage-quit",
+      "Built engagement systems that people actually love (not the manipulative kind)",
+      "I built AI tools that turn my Figma files into actual code (game changer)"
     ],
     isBulleted: true
   },
   {
-    heading: "Leadership & Collaboration Style",
+    heading: "How I Actually Lead",
     content: [
-      "Believes in collaborative, egalitarian approach rather than strict hierarchies",
-      "Willing to take direction from younger managers while contributing senior expertise",
-      "Emphasizes mutual respect and shared goals over seniority"
+      "The 22-year-old intern might have the best idea in the room - I've learned to listen",
+      "I ask questions before giving answers (learned this the hard way)",
+      "My ego took enough beatings early in my career - now I just want to ship great stuff",
+      "Younger managers? Bring it on - fresh perspectives keep me sharp"
     ],
     isBulleted: true
   },
   {
-    heading: "Growth Vision (2-3 years)",
+    heading: "Why I Want Noon Specifically",
     content: [
-      "Year 1: Improve platform navigation and build cross-team relationships",
-      "Later: Lead major product projects and mentor junior designers",
-      "Long-term: Become strategic design leader influencing product direction"
+      "Every design choice directly hits the bottom line - that connection energizes me",
+      "Marketplace complexity is like a puzzle I actually want to solve",
+      "Most senior roles turn you into a meeting person - this still lets me design",
+      "I want to build something millions of people use and actually love"
     ],
     isBulleted: true
   },
   {
-    heading: "Mentoring & Innovation Approach",
+    heading: "Where I See This Going",
     content: [
-      "Teaches through real project involvement rather than separate training",
-      "Leverages AI tools to create efficient workflows (Figma to code generation, automated testing)",
-      "Focuses on AI that enhances human creativity rather than replacing it"
+      "Year 1: Fix the stuff that's obviously broken, earn trust, start moving metrics",
+      "Year 2-3: Own the big scary projects, teach the junior folks, help shape where we're heading",
+      "Long-term: Be the design person in the room when big business decisions happen"
     ],
     isBulleted: true
   },
   {
-    heading: "Career Trajectory",
+    heading: "How I Actually Work",
     content: [
-      "Steady growth from basic design tasks to strategic leadership",
-      "Transformation projects across multiple industries", 
-      "Emphasis on solving increasingly complex problems while maintaining execution excellence"
+      "Mentoring: Jump into real projects together - no boring classroom stuff",
+      "Innovation: I built AI tools that turn my Figma files into actual code (game changer)",
+      "Philosophy: Automate the tedious stuff so I can focus on the problems that matter",
+      "Growth: I don't climb ladders - I just try to solve more interesting problems each year"
     ],
     isBulleted: true
   }
@@ -98,7 +100,7 @@ export default function SummaryPage() {
   }, [])
 
   const handleBack = () => {
-    router.push('/')
+    router.back()
   }
 
   const handleShare = async () => {
@@ -201,7 +203,7 @@ export default function SummaryPage() {
         {summaryData.map((section, index) => (
           <div 
             key={index}
-            className={`w-full p-4 rounded-3xl flex flex-col justify-center items-start gap-4 transition-all duration-700 ease-out ${
+            className={`self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4 transition-all duration-700 ease-out ${
               isLoaded 
                 ? 'opacity-100 translate-y-0' 
                 : 'opacity-0 translate-y-8'
@@ -227,7 +229,7 @@ export default function SummaryPage() {
                 ))
               ) : (
                 section.content.map((item, itemIndex) => (
-                  <div key={itemIndex} className="mb-2 last:mb-0 w-full">
+                  <div key={itemIndex} className="mb-2 last:mb-0">
                     {item}
                   </div>
                 ))
