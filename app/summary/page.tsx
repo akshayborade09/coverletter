@@ -19,7 +19,7 @@ const summaryData: SummarySection[] = [
     isBulleted: false
   },
   {
-    heading: "Why I'm the Right Fit for Noon",
+    heading: "Why I'm the Right Fit",
     content: [
       "I've been living this exact challenge at Ola - juggling strategy while still designing the actual experience people touch",
       "My wins: Turned CoverSure's Motor Club from 2.8K to 24.6K users (778% growth!), saved The ParentInc from their brutal 40% same-day uninstall problem",
@@ -57,7 +57,7 @@ const summaryData: SummarySection[] = [
     isBulleted: true
   },
   {
-    heading: "Why I Want Noon Specifically",
+    heading: "Why I want this role",
     content: [
       "Every design choice directly hits the bottom line - that connection energizes me",
       "Marketplace complexity is like a puzzle I actually want to solve",
@@ -200,7 +200,12 @@ export default function SummaryPage() {
 
       {/* Content */}
       <div className="px-4 space-y-3 pb-32">
-        {summaryData.map((section, index) => (
+        {summaryData
+          .filter(section => 
+            section.heading !== "Why Noon Makes Perfect Sense" && 
+            section.heading !== "Why I want this role"
+          )
+          .map((section, index) => (
           <div 
             key={index}
             className={`self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4 transition-all duration-700 ease-out ${

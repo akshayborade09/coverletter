@@ -19,6 +19,7 @@ export default function ReadingPage() {
   const [userInteracted, setUserInteracted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null)
+  const [playbackSpeed, setPlaybackSpeed] = useState(1)
   const audioRef = useRef<HTMLAudioElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -49,6 +50,21 @@ export default function ReadingPage() {
       } catch (error) {
         console.error('Audio context creation failed:', error)
       }
+    }
+  }
+
+  // Toggle playback speed: 1x -> 1.5x -> 2x -> 1x
+  const togglePlaybackSpeed = () => {
+    const speeds = [1, 1.5, 2]
+    const currentIndex = speeds.indexOf(playbackSpeed)
+    const nextIndex = (currentIndex + 1) % speeds.length
+    const newSpeed = speeds[nextIndex]
+    
+    setPlaybackSpeed(newSpeed)
+    
+    // Apply speed to audio element
+    if (audioRef.current) {
+      audioRef.current.playbackRate = newSpeed
     }
   }
 
@@ -523,8 +539,19 @@ export default function ReadingPage() {
       // Update the audio source
       audio.src = newSrc
       audio.load()
+      
+      // Apply current playback speed
+      audio.playbackRate = playbackSpeed
     }
   }, [currentChapterIndex])
+
+  // Effect to update playback speed without reloading audio
+  useEffect(() => {
+    const audio = audioRef.current
+    if (audio) {
+      audio.playbackRate = playbackSpeed
+    }
+  }, [playbackSpeed])
 
   const { questionIndex, bulletIndex } = getCurrentItemInfo()
 
@@ -667,7 +694,12 @@ export default function ReadingPage() {
           </div>
         )}
         
-        {questionsData.map((item, index) => (
+        {questionsData
+          .filter(question => 
+            question.question !== "Why My Background Fits Noon Perfectly" && 
+            question.question !== "Why Noon, Not Just Any Senior Role"
+          )
+          .map((item, index) => (
             <div 
               key={`qa-${index}`} 
             className={`space-y-4 transition-all duration-700 ease-out ${
@@ -716,51 +748,103 @@ export default function ReadingPage() {
         Your browser does not support the audio element.
       </audio>
 
-      {/* Bottom Navigation with Summarise and Pause/Play */}
-      <BottomNavigation
-        leftButton={{
-          label: "Summarise",
-          onClick: handleSummarise,
-          icon: (
+      {/* Bottom Navigation with Summarise, Speed, and Pause/Play */}
+      <div className="fixed left-0 right-0 bottom-0 h-36 pointer-events-none z-10">
+        <div className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(0deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            maskImage: 'linear-gradient(0deg, black 0%, black 70%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(0deg, black 0%, black 70%, transparent 100%)'
+          }}
+        ></div>
+      </div>
+
+      <div className="fixed left-4 right-4 z-20"
+        style={{
+          position: 'fixed',
+          bottom: `calc(1rem + env(safe-area-inset-bottom, 0px))`,
+          left: '1rem',
+          right: '1rem',
+          zIndex: 20,
+          transform: 'translateZ(0)',
+          WebkitTransform: 'translateZ(0)'
+        }}
+      >
+        <div className="w-full p-2 rounded-[991.36px] inline-flex justify-start items-center gap-1.5 overflow-hidden"
+          style={{
+            background: 'linear-gradient(118deg, rgba(255, 255, 255, 0.50) -19.85%, rgba(235, 235, 235, 0.37) 4.2%, rgba(224, 224, 224, 0.29) 13.88%, rgba(212, 212, 212, 0.21) 27.98%, rgba(207, 207, 207, 0.18) 37.8%, rgba(202, 202, 202, 0.14) 44.38%, rgba(200, 200, 200, 0.13) 50.54%, rgba(196, 196, 196, 0.10) 60.21%)',
+            boxShadow: '0px 1.983px 47.585px -1.983px rgba(0, 0, 0, 0.18)',
+            backdropFilter: 'blur(23.792530059814453px)',
+            WebkitBackdropFilter: 'blur(23.792530059814453px)'
+          }}
+        >
+          {/* Summarise Button */}
+          <button
+            onClick={handleSummarise}
+            className="flex-1 p-3 rounded-3xl flex justify-center items-center gap-1.5 transition-all duration-200 ease-out hover:scale-105 active:scale-95 hover:brightness-110 active:brightness-90 bg-white/30"
+          >
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fillRule="evenodd" clipRule="evenodd" d="M4.5 5C4.5 3.34315 5.84315 2 7.5 2H17.5C19.1569 2 20.5 3.34315 20.5 5V19C20.5 20.6569 19.1569 22 17.5 22H7.5C5.34315 22 4.5 20.6569 4.5 19V5ZM9.5 6C8.94772 6 8.5 6.44772 8.5 7C8.5 7.55228 8.94772 8 9.5 8H15.5C16.0523 8 16.5 7.55228 16.5 7C16.5 6.44772 16.0523 6 15.5 6H9.5ZM9.5 10C8.94772 10 8.5 10.4477 8.5 11C8.5 11.5523 8.94772 12 9.5 12H15.5C16.0523 12 16.5 11.5523 16.5 11C16.5 10.4477 16.0523 10 15.5 10H9.5ZM9.5 14C8.94772 14 8.5 14.4477 8.5 15C8.5 15.5523 8.94772 16 9.5 16H11.5C12.0523 16 12.5 15.5523 12.5 15C12.5 14.4477 12.0523 14 11.5 14H9.5Z" fill="white"/>
             </svg>
-          ),
-          variant: 'secondary'
-        }}
-        rightButton={{
-          label: isCompleted ? "Restart" : (isPlaying ? "Pause" : "Play"),
-          onClick: togglePlayPause,
-          icon: isCompleted ? (
-            <svg 
-              width="25" 
-              height="24" 
-              viewBox="0 0 25 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M4.5 12C4.5 7.58172 8.08172 4 12.5 4C16.9183 4 20.5 7.58172 20.5 12C20.5 16.4183 16.9183 20 12.5 20C10.7817 20 9.21373 19.4151 7.96087 18.4295" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M8.5 16L6.5 18L4.5 16" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          ) : isPlaying ? (
-            <div className="w-6 h-6 relative overflow-hidden flex items-center justify-center">
-              <div className="w-1 h-4 bg-white rounded-sm"></div>
-              <div className="w-1 h-4 bg-white rounded-sm ml-1"></div>
+            <div className="text-center justify-center text-white text-base leading-snug">
+              Summarise
             </div>
-          ) : (
-            <svg 
-              width="25" 
-              height="24" 
-              viewBox="0 0 25 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
+          </button>
+
+          {/* Play/Pause Button */}
+          <button
+            onClick={togglePlayPause}
+            className="flex-1 p-3 rounded-[63.49px] flex justify-center items-center gap-1.5 transition-all duration-200 ease-out hover:scale-105 active:scale-95 hover:brightness-110 active:brightness-90"
+            style={{ backgroundColor: "#00D128" }}
+          >
+            {isCompleted ? (
+              <svg 
+                width="25" 
+                height="24" 
+                viewBox="0 0 25 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M4.5 12C4.5 7.58172 8.08172 4 12.5 4C16.9183 4 20.5 7.58172 20.5 12C20.5 16.4183 16.9183 20 12.5 20C10.7817 20 9.21373 19.4151 7.96087 18.4295" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M8.5 16L6.5 18L4.5 16" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ) : isPlaying ? (
+              <div className="w-6 h-6 relative overflow-hidden flex items-center justify-center">
+                <div className="w-1 h-4 bg-white rounded-sm"></div>
+                <div className="w-1 h-4 bg-white rounded-sm ml-1"></div>
+              </div>
+            ) : (
+              <svg 
+                width="25" 
+                height="24" 
+                viewBox="0 0 25 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M10.0765 2.53365C8.07781 1.29918 5.5 2.73688 5.5 5.08605V18.914C5.5 21.2632 8.07781 22.7009 10.0765 21.4664L21.2705 14.5524C23.1686 13.3801 23.1686 10.6199 21.2705 9.44763L10.0765 2.53365Z" fill="white"/>
+              </svg>
+            )}
+            <div className="text-center justify-center text-white text-base leading-snug">
+              {isCompleted ? "Restart" : (isPlaying ? "Pause" : "Play")}
+            </div>
+          </button>
+
+          {/* Speed Toggle Button - Only appears after user taps play */}
+          {userInteracted && (
+            <button
+              onClick={togglePlaybackSpeed}
+              className="p-3 rounded-full flex justify-center items-center transition-all duration-200 ease-out hover:scale-105 active:scale-95 hover:brightness-110 active:brightness-90 bg-white/30"
+              style={{ minWidth: '56px' }}
             >
-              <path d="M10.0765 2.53365C8.07781 1.29918 5.5 2.73688 5.5 5.08605V18.914C5.5 21.2632 8.07781 22.7009 10.0765 21.4664L21.2705 14.5524C23.1686 13.3801 23.1686 10.6199 21.2705 9.44763L10.0765 2.53365Z" fill="white"/>
-            </svg>
-          ),
-          variant: 'primary'
-        }}
-      />
+              <span className="text-white text-sm font-medium">
+                {playbackSpeed === 1 ? '1x' : playbackSpeed === 1.5 ? '1.5x' : '2x'}
+              </span>
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

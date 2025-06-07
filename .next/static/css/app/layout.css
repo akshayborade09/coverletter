@@ -795,9 +795,6 @@ body{
 .mb-4{
   margin-bottom: 1rem;
 }
-.mb-6{
-  margin-bottom: 1.5rem;
-}
 .ml-1{
   margin-left: 0.25rem;
 }
@@ -822,11 +819,8 @@ body{
 .mt-auto{
   margin-top: auto;
 }
-.mt-0\.5{
-  margin-top: 0.125rem;
-}
-.mt-1{
-  margin-top: 0.25rem;
+.ml-1\.5{
+  margin-left: 0.375rem;
 }
 .block{
   display: block;
@@ -925,6 +919,12 @@ body{
 .h-svh{
   height: 100svh;
 }
+.h-14{
+  height: 3.5rem;
+}
+.h-\[56px\]{
+  height: 56px;
+}
 .max-h-96{
   max-height: 24rem;
 }
@@ -942,9 +942,6 @@ body{
 }
 .min-h-svh{
   min-height: 100svh;
-}
-.min-h-\[200px\]{
-  min-height: 200px;
 }
 .w-0{
   width: 0px;
@@ -1017,6 +1014,9 @@ body{
 }
 .w-px{
   width: 1px;
+}
+.w-14{
+  width: 3.5rem;
 }
 .min-w-0{
   min-width: 0px;
@@ -1133,6 +1133,9 @@ body{
 .cursor-pointer{
   cursor: pointer;
 }
+.cursor-not-allowed{
+  cursor: not-allowed;
+}
 .touch-none{
   touch-action: none;
 }
@@ -1229,11 +1232,6 @@ body{
   --tw-space-y-reverse: 0;
   margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(2rem * var(--tw-space-y-reverse));
-}
-.space-y-0 > :not([hidden]) ~ :not([hidden]){
-  --tw-space-y-reverse: 0;
-  margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(0px * var(--tw-space-y-reverse));
 }
 .self-stretch{
   align-self: stretch;
@@ -1427,6 +1425,9 @@ body{
 }
 .bg-white\/30{
   background-color: rgb(255 255 255 / 0.3);
+}
+.bg-white\/10{
+  background-color: rgb(255 255 255 / 0.1);
 }
 .bg-\[radial-gradient\(circle_at_center\2c var\(--tw-gradient-stops\)\2c transparent_80\%\)\]{
   background-image: radial-gradient(circle at center,var(--tw-gradient-stops),transparent 80%);
@@ -1736,9 +1737,6 @@ body{
 }
 .text-white\/90{
   color: rgb(255 255 255 / 0.9);
-}
-.text-white\/70{
-  color: rgb(255 255 255 / 0.7);
 }
 .underline-offset-4{
   text-underline-offset: 4px;

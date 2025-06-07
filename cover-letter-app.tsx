@@ -106,7 +106,12 @@ export default function Component() {
 
       {/* Content */}
       <div className="px-4 space-y-3 pb-32">
-        {questionsData.map((question, index) => (
+        {questionsData
+          .filter(question => 
+            question.question !== "Why My Background Fits Noon Perfectly" && 
+            question.question !== "Why Noon, Not Just Any Senior Role"
+          )
+          .map((question, index) => (
           <div 
             key={index}
             className={`self-stretch p-4 rounded-3xl inline-flex flex-col justify-center items-start gap-4 transition-all duration-700 ease-out ${
