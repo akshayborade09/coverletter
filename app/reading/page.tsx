@@ -20,9 +20,16 @@ export default function ReadingPage() {
   const [isMobile, setIsMobile] = useState(false)
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null)
   const [playbackSpeed, setPlaybackSpeed] = useState(1)
+  const [savedPosition, setSavedPosition] = useState<number>(0)
   const audioRef = useRef<HTMLAudioElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+
+  // Filter questions (same filter used in the JSX)
+  const filteredQuestions = questionsData.filter(question => 
+    question.question !== "Why My Background Fits Noon Perfectly" && 
+    question.question !== "Why Noon, Not Just Any Senior Role"
+  )
 
   // Detect mobile device
   useEffect(() => {
@@ -68,45 +75,22 @@ export default function ReadingPage() {
     }
   }
 
-  // Create playlist mapping based on user's specification
+  // Create playlist mapping based on filtered questions
   const createPlaylist = () => {
     const playlist: string[] = []
+    let audioFileNumber = 1
     
-    // Question 1: 01 (question) + 02-05 (4 bullets) = 5 files
-    playlist.push('01.mp3')
-    playlist.push('02.mp3', '03.mp3', '04.mp3', '05.mp3')
-    
-    // Question 2: 06 (question) + 07-10 (4 bullets) = 5 files
-    playlist.push('06.mp3')
-    playlist.push('07.mp3', '08.mp3', '09.mp3', '10.mp3')
-    
-    // Question 3: 11 (question) + 12-14 (3 bullets) = 4 files
-    playlist.push('11.mp3')
-    playlist.push('12.mp3', '13.mp3', '14.mp3')
-    
-    // Question 4: 15 (question) + 16-19 (4 bullets) = 5 files
-    playlist.push('15.mp3')
-    playlist.push('16.mp3', '17.mp3', '18.mp3', '19.mp3')
-    
-    // Question 5: 20 (question) + 21-24 (4 bullets) = 5 files
-    playlist.push('20.mp3')
-    playlist.push('21.mp3', '22.mp3', '23.mp3', '24.mp3')
-    
-    // Question 6: 25 (question) + 26-28 (3 bullets) = 4 files
-    playlist.push('25.mp3')
-    playlist.push('26.mp3', '27.mp3', '28.mp3')
-    
-    // Question 7: 29 (question) + 30-33 (4 bullets) = 5 files
-    playlist.push('29.mp3')
-    playlist.push('30.mp3', '31.mp3', '32.mp3', '33.mp3')
-    
-    // Question 8: 34 (question) + 35-38 (4 bullets) = 5 files
-    playlist.push('34.mp3')
-    playlist.push('35.mp3', '36.mp3', '37.mp3', '38.mp3')
-    
-    // Question 9: 39 (question) + 40-43 (4 bullets) = 5 files
-    playlist.push('39.mp3')
-    playlist.push('40.mp3', '41.mp3', '42.mp3', '43.mp3')
+    filteredQuestions.forEach((question, questionIndex) => {
+      // Add the question audio file
+      playlist.push(`${audioFileNumber.toString().padStart(2, '0')}.mp3`)
+      audioFileNumber++
+      
+      // Add audio files for each bullet point
+      question.answer.forEach(() => {
+        playlist.push(`${audioFileNumber.toString().padStart(2, '0')}.mp3`)
+        audioFileNumber++
+      })
+    })
     
     return playlist
   }
@@ -120,33 +104,11 @@ export default function ReadingPage() {
 
   // Get current playing item info
   const getCurrentItemInfo = () => {
-    const chapterIndexes = [
-      0, // Q1: Chapter 01
-      1, 2, 3, 4, 5, // Q1 bullets: Chapters 02-05
-      6, // Q2: Chapter 06
-      7, 8, 9, 10, // Q2 bullets: Chapters 07-10
-      11, // Q3: Chapter 11
-      12, 13, 14, // Q3 bullets: Chapters 12-14
-      15, // Q4: Chapter 15
-      16, 17, 18, 19, // Q4 bullets: Chapters 16-19
-      20, // Q5: Chapter 20
-      21, 22, 23, 24, // Q5 bullets: Chapters 21-24
-      25, // Q6: Chapter 25
-      26, 27, 28, // Q6 bullets: Chapters 26-28
-      29, // Q7: Chapter 29
-      30, 31, 32, 33, // Q7 bullets: Chapters 30-33
-      34, // Q8: Chapter 34
-      35, 36, 37, 38, // Q8 bullets: Chapters 35-38
-      39, // Q9: Chapter 39
-      40, 41, 42, 43  // Q9 bullets: Chapters 40-43
-    ]
-    
-    // Find which question and bullet we're currently on
     let questionIndex = 0
     let bulletIndex = -1
     let accumulatedIndex = 0
     
-    for (let q = 0; q < questionsData.length; q++) {
+    for (let q = 0; q < filteredQuestions.length; q++) {
       if (currentChapterIndex === accumulatedIndex) {
         questionIndex = q
         bulletIndex = -1 // This is the question itself
@@ -154,7 +116,7 @@ export default function ReadingPage() {
       }
       accumulatedIndex++
       
-      for (let b = 0; b < questionsData[q].answer.length; b++) {
+      for (let b = 0; b < filteredQuestions[q].answer.length; b++) {
         if (currentChapterIndex === accumulatedIndex) {
           questionIndex = q
           bulletIndex = b
@@ -186,14 +148,14 @@ export default function ReadingPage() {
 
     if (!targetElement) return
 
-    // Check if we're on the last question (Question 9)
-    const isLastQuestion = questionIndex === questionsData.length - 1
+    // Check if we're on the last question
+    const isLastQuestion = questionIndex === filteredQuestions.length - 1
     
     if (isLastQuestion && !hasReachedLastSection) {
       // Get the last element in the content
-      const lastQuestion = contentContainer.querySelector(`[data-question-index="${questionsData.length - 1}"]`)
-      const lastBulletCount = questionsData[questionsData.length - 1].answer.length - 1
-      const lastBullet = contentContainer.querySelector(`[data-question-index="${questionsData.length - 1}"][data-bullet-index="${lastBulletCount}"]`)
+      const lastQuestion = contentContainer.querySelector(`[data-question-index="${filteredQuestions.length - 1}"]`)
+      const lastBulletCount = filteredQuestions[filteredQuestions.length - 1].answer.length - 1
+      const lastBullet = contentContainer.querySelector(`[data-question-index="${filteredQuestions.length - 1}"][data-bullet-index="${lastBulletCount}"]`)
       const lastElement = lastBullet || lastQuestion
       
       if (lastElement) {
@@ -249,6 +211,9 @@ export default function ReadingPage() {
     const currentItemId = getItemId(questionIndex, bulletIndex)
     setCompletedItems(prev => new Set([...prev, currentItemId]))
     
+    // Reset saved position when moving to next chapter
+    setSavedPosition(0)
+    
     if (currentChapterIndex < playlist.length - 1) {
       setShouldAutoPlay(isPlaying) // Remember if we should auto-play
       setCurrentChapterIndex(currentChapterIndex + 1)
@@ -264,11 +229,12 @@ export default function ReadingPage() {
   }
 
   const handleRestart = () => {
-    // Reset all states
+    // Reset all states including saved position
     setCurrentChapterIndex(0)
     setIsCompleted(false)
     setHasReachedLastSection(false)
     setCompletedItems(new Set())
+    setSavedPosition(0)
     setShouldAutoPlay(true)
     
     // Scroll to top
@@ -306,6 +272,8 @@ export default function ReadingPage() {
     
     if (audioRef.current) {
       if (isPlaying) {
+        // Save current playback position before pausing
+        setSavedPosition(audioRef.current.currentTime)
         audioRef.current.pause()
         setShouldAutoPlay(false)
       } else {
@@ -326,14 +294,14 @@ export default function ReadingPage() {
           }
         }
         
-        // Force load first - especially important on mobile
-        audio.load()
-        
-        // Add a small delay for mobile browsers to process the load
-        const playDelay = isMobile ? 500 : 100
-        setTimeout(async () => {
-          // Better error handling for production
+        // Load the audio if not already loaded
+        const attemptPlayWithPosition = async () => {
           try {
+            // Set the saved position before playing
+            if (savedPosition > 0) {
+              audio.currentTime = savedPosition
+            }
+            
             const playPromise = audio.play()
             if (playPromise !== undefined) {
               await playPromise
@@ -365,6 +333,9 @@ export default function ReadingPage() {
               
               setTimeout(async () => {
                 try {
+                  if (savedPosition > 0) {
+                    audio.currentTime = savedPosition
+                  }
                   await audio.play()
                   setShouldAutoPlay(true)
                   setIsPlaying(true)
@@ -377,7 +348,30 @@ export default function ReadingPage() {
               }, isMobile ? 300 : 100)
             }, retryDelay)
           }
-        }, playDelay)
+        }
+        
+        // Check if audio is loaded enough to set currentTime
+        if (audio.readyState >= 1) { // HAVE_METADATA or higher
+          attemptPlayWithPosition()
+        } else {
+          // Wait for metadata to load first
+          const handleLoadedMetadata = () => {
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
+            attemptPlayWithPosition()
+          }
+          audio.addEventListener('loadedmetadata', handleLoadedMetadata)
+          
+          // Force load if not already loading
+          if (audio.readyState === 0) {
+            audio.load()
+          }
+          
+          // Fallback timeout
+          setTimeout(() => {
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
+            attemptPlayWithPosition()
+          }, isMobile ? 2000 : 1000)
+        }
       }
     }
   }
@@ -542,6 +536,9 @@ export default function ReadingPage() {
       
       // Apply current playback speed
       audio.playbackRate = playbackSpeed
+      
+      // Reset saved position when changing chapters
+      setSavedPosition(0)
     }
   }, [currentChapterIndex])
 
@@ -694,12 +691,7 @@ export default function ReadingPage() {
           </div>
         )}
         
-        {questionsData
-          .filter(question => 
-            question.question !== "Why My Background Fits Noon Perfectly" && 
-            question.question !== "Why Noon, Not Just Any Senior Role"
-          )
-          .map((item, index) => (
+        {filteredQuestions.map((item, index) => (
             <div 
               key={`qa-${index}`} 
             className={`space-y-4 transition-all duration-700 ease-out ${
