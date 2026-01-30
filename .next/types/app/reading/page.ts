@@ -1,4 +1,4 @@
-// File: /Users/akshay.borhade/coverletter/app/reading/page.tsx
+// File: /Users/akshay.borhade/Documents/Github/cover letter/coverletter/app/reading/page.tsx
 import * as entry from '../../../../app/reading/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
