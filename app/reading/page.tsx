@@ -583,15 +583,6 @@ export default function ReadingPage() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Landscape Rotation Message */}
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-[100] landscape:flex portrait:hidden">
-        <div className="text-center px-8">
-          <div className="text-6xl mb-4">📱</div>
-          <h2 className="text-2xl font-medium mb-2">Rotate Your Device</h2>
-          <p className="text-gray-300">Please rotate your device to portrait mode for the best experience</p>
-        </div>
-      </div>
-
       {/* Header with Smooth Fade Mask */}
       <div className="sticky top-0 w-full z-20">
         {/* Smooth Fade Mask */}
