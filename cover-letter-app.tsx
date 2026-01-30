@@ -52,7 +52,7 @@ export default function Component() {
 
   return (
     <div
-      className="min-h-screen-safe text-white relative"
+      className="flex flex-col flex-1 min-h-0 text-white"
       style={{
         backgroundImage: "url('/images/gradient-bg.png')",
         backgroundSize: "cover",
@@ -60,43 +60,42 @@ export default function Component() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Header with Smooth Fade Mask */}
-      <div className="sticky top-0 w-full z-20">
-        {/* Smooth Fade Mask */}
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0) 100%)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            maskImage: 'linear-gradient(180deg, black 0%, black 70%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(180deg, black 0%, black 70%, transparent 100%)'
-          }}
-        ></div>
-        
-        {/* Header Content */}
-        <div className="relative flex justify-between items-center px-4 bg-gradient-to-b from-black/20 via-black/20 to-transparent pt-5 pb-8">
-          <h1 className="text-2xl font-medium text-white">Akshay's Cover Letter</h1>
+      {/* Scrollable: header + content */}
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+        {/* Header */}
+        <div className="sticky top-0 w-full z-20 shrink-0">
           <div 
-            className="p-2 rounded-[40px] inline-flex justify-start items-center gap-2.5 cursor-pointer transition-all duration-200 ease-out hover:scale-105 active:scale-95 hover:brightness-110 active:brightness-90"
-            onClick={handleShare}
+            className="absolute inset-0 pointer-events-none"
             style={{
-              background: 'linear-gradient(143deg, rgba(255, 255, 255, 0.37) -3.54%, rgba(114, 114, 114, 0.42) 95.15%)',
-              boxShadow: '0px 1.127px 3.381px 0px rgba(255, 255, 255, 0.25) inset, 0px 0.501px 12.022px -0.501px rgba(0, 0, 0, 0.18)',
-              backdropFilter: 'blur(29.01752471923828px)',
-              WebkitBackdropFilter: 'blur(29.01752471923828px)',
-              borderImage: 'linear-gradient(143deg, #333333 0%, #EDEDED 32.43%, #FFFFFF 70%) 1'
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0) 100%)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              maskImage: 'linear-gradient(180deg, black 0%, black 70%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(180deg, black 0%, black 70%, transparent 100%)'
             }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 12.75V17C20 18.6569 18.6569 20 17 20H7C5.34315 20 4 18.6569 4 17V12.75M12 4V15.25M12 4L16.5 8.5M12 4L7.5 8.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          />
+          <div className="relative flex justify-between items-center px-4 bg-gradient-to-b from-black/20 via-black/20 to-transparent pt-2 pb-6">
+            <h1 className="text-2xl font-medium text-white">Akshay's Cover Letter</h1>
+            <div 
+              className="p-2 rounded-[40px] inline-flex justify-start items-center gap-2.5 cursor-pointer transition-all duration-200 ease-out hover:scale-105 active:scale-95 hover:brightness-110 active:brightness-90"
+              onClick={handleShare}
+              style={{
+                background: 'linear-gradient(143deg, rgba(255, 255, 255, 0.37) -3.54%, rgba(114, 114, 114, 0.42) 95.15%)',
+                boxShadow: '0px 1.127px 3.381px 0px rgba(255, 255, 255, 0.25) inset, 0px 0.501px 12.022px -0.501px rgba(0, 0, 0, 0.18)',
+                backdropFilter: 'blur(29.01752471923828px)',
+                WebkitBackdropFilter: 'blur(29.01752471923828px)',
+                borderImage: 'linear-gradient(143deg, #333333 0%, #EDEDED 32.43%, #FFFFFF 70%) 1'
+              }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 12.75V17C20 18.6569 18.6569 20 17 20H7C5.34315 20 4 18.6569 4 17V12.75M12 4V15.25M12 4L16.5 8.5M12 4L7.5 8.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="px-4 space-y-3 pb-32">
+        {/* Content */}
+        <div className="px-4 space-y-3 pb-4">
         {questionsData
           .filter(question => 
             question.question !== "Why My Background Fits Noon Perfectly" && 
@@ -131,10 +130,12 @@ export default function Component() {
             </div>
           </div>
         ))}
+        </div>
       </div>
 
-      {/* Bottom Buttons */}
-      <BottomNavigation
+      {/* Bottom nav: always visible at bottom of screen */}
+      <div className="shrink-0 px-4 pt-2 pb-2" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
+        <BottomNavigation
         leftButton={{
           label: "Summarise",
           onClick: handleSummarise,
@@ -155,7 +156,8 @@ export default function Component() {
           ),
           variant: 'primary'
         }}
-      />
+        />
+      </div>
     </div>
   )
 }

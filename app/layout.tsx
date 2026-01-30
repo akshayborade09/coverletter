@@ -22,19 +22,19 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-neutral-900 flex items-center justify-center p-0 sm:p-4">
-        {/* iPhone 17 frame: 402×874px. transform creates containing block so fixed nav stays inside. */}
+    <html lang="en" className="h-full">
+      <body className="h-full min-h-0 bg-neutral-900 flex flex-col sm:items-center sm:justify-center sm:p-4 p-0">
+        {/* Mobile: fixed full viewport. Desktop: centered 402×874 frame. */}
         <div
-          className="mobile-frame w-full h-[100dvh] sm:h-[874px] mx-auto flex flex-col overflow-hidden sm:rounded-[2.75rem] sm:shadow-2xl sm:shadow-black/50"
+          className="mobile-frame w-full flex-1 flex flex-col overflow-hidden box-border
+            max-sm:fixed max-sm:inset-0 max-sm:flex-none max-sm:h-full
+            sm:h-[874px] sm:max-w-[402px] sm:rounded-[2.75rem] sm:shadow-2xl sm:shadow-black/50 sm:mx-auto"
           style={{
-            maxWidth: 402,
-            transform: 'translateZ(0)',
+            paddingTop: 'env(safe-area-inset-top, 0px)',
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           }}
         >
-          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
-            {children}
-          </div>
+          {children}
         </div>
       </body>
     </html>

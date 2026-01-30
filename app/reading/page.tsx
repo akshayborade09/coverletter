@@ -575,7 +575,7 @@ export default function ReadingPage() {
 
   return (
     <div
-      className="min-h-screen-safe text-white relative"
+      className="flex flex-col flex-1 min-h-0 text-white"
       style={{
         backgroundImage: "url('/images/gradient-bg.png')",
         backgroundSize: "cover",
@@ -583,22 +583,21 @@ export default function ReadingPage() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Header with Smooth Fade Mask */}
-      <div className="sticky top-0 w-full z-20">
-        {/* Smooth Fade Mask */}
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0) 100%)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            maskImage: 'linear-gradient(180deg, black 0%, black 70%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(180deg, black 0%, black 70%, transparent 100%)'
-          }}
-        ></div>
-        
-        {/* Header Content */}
-        <div className="relative flex items-center px-4 bg-gradient-to-b from-black/40 via-black/20 to-transparent pt-5 pb-8 gap-4">
+      {/* Scrollable: header + content */}
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+        {/* Header */}
+        <div className="sticky top-0 w-full z-20 shrink-0">
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0) 100%)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              maskImage: 'linear-gradient(180deg, black 0%, black 70%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(180deg, black 0%, black 70%, transparent 100%)'
+            }}
+          />
+          <div className="relative flex items-center px-4 bg-gradient-to-b from-black/40 via-black/20 to-transparent pt-2 pb-6 gap-4">
           <div 
             className="p-2 rounded-[40px] inline-flex justify-center items-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 hover:brightness-110 active:brightness-90"
             onClick={handleBack}
@@ -617,11 +616,11 @@ export default function ReadingPage() {
           <h1 className="text-2xl font-medium text-white">
             Read me
           </h1>
+          </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div ref={contentRef} className="px-4 pb-32 space-y-8">
+        {/* Content */}
+        <div ref={contentRef} className="px-4 pb-4 space-y-8">
         {/* Audio Error Message */}
         {audioError && (
           <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-4">
@@ -716,6 +715,7 @@ export default function ReadingPage() {
             </div>
           </div>
         ))}
+        </div>
       </div>
 
       {/* Hidden Audio Element */}
@@ -731,31 +731,12 @@ export default function ReadingPage() {
         Your browser does not support the audio element.
       </audio>
 
-      {/* Bottom Navigation with Summarise, Speed, and Pause/Play */}
-      <div className="fixed left-0 right-0 bottom-0 h-36 pointer-events-none z-10">
-        <div className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(0deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-            maskImage: 'linear-gradient(0deg, black 0%, black 70%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(0deg, black 0%, black 70%, transparent 100%)'
-          }}
-        ></div>
-      </div>
-
-      <div className="fixed left-4 right-4 z-20"
-        style={{
-          position: 'fixed',
-          bottom: `calc(1rem + env(safe-area-inset-bottom, 0px))`,
-          left: '1rem',
-          right: '1rem',
-          zIndex: 20,
-          transform: 'translateZ(0)',
-          WebkitTransform: 'translateZ(0)'
-        }}
+      {/* Bottom bar: always visible at bottom */}
+      <div 
+        className="shrink-0 px-4 pt-2 pb-2"
+        style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
       >
-        <div className="w-full p-2 rounded-[991.36px] inline-flex justify-start items-center gap-1.5 overflow-hidden"
+        <div className="w-full p-2 rounded-[991.36px] flex justify-start items-center gap-1.5 overflow-hidden bg-white/20 backdrop-blur-[24px] shadow-[0px_1.983px_47.585px_-1.983px_rgba(0,0,0,0.18)]"
           style={{
             background: 'linear-gradient(118deg, rgba(255, 255, 255, 0.50) -19.85%, rgba(235, 235, 235, 0.37) 4.2%, rgba(224, 224, 224, 0.29) 13.88%, rgba(212, 212, 212, 0.21) 27.98%, rgba(207, 207, 207, 0.18) 37.8%, rgba(202, 202, 202, 0.14) 44.38%, rgba(200, 200, 200, 0.13) 50.54%, rgba(196, 196, 196, 0.10) 60.21%)',
             boxShadow: '0px 1.983px 47.585px -1.983px rgba(0, 0, 0, 0.18)',
