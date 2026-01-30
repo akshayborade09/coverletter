@@ -1,25 +1,40 @@
 {
   "pages": {
-    "/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/layout.css",
-      "static/chunks/app/layout.js"
+    "/_not-found/page": [
+      "static/chunks/webpack-598a2e24bdcae713.js",
+      "static/chunks/4bd1b696-5b2b1e7b5478d01a.js",
+      "static/chunks/684-5c5347e335e54b32.js",
+      "static/chunks/main-app-ca64c422c6d50b46.js",
+      "static/chunks/app/_not-found/page-a8c4ecca5cc9402d.js"
     ],
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+    "/layout": [
+      "static/chunks/webpack-598a2e24bdcae713.js",
+      "static/chunks/4bd1b696-5b2b1e7b5478d01a.js",
+      "static/chunks/684-5c5347e335e54b32.js",
+      "static/chunks/main-app-ca64c422c6d50b46.js",
+      "static/css/0265493e7e4aad1d.css",
+      "static/chunks/app/layout-9d97dd5a727444ca.js"
     ],
     "/reading/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/reading/page.js"
+      "static/chunks/webpack-598a2e24bdcae713.js",
+      "static/chunks/4bd1b696-5b2b1e7b5478d01a.js",
+      "static/chunks/684-5c5347e335e54b32.js",
+      "static/chunks/main-app-ca64c422c6d50b46.js",
+      "static/chunks/app/reading/page-c5bc211c50241261.js"
     ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+    "/page": [
+      "static/chunks/webpack-598a2e24bdcae713.js",
+      "static/chunks/4bd1b696-5b2b1e7b5478d01a.js",
+      "static/chunks/684-5c5347e335e54b32.js",
+      "static/chunks/main-app-ca64c422c6d50b46.js",
+      "static/chunks/app/page-d3e7f0232cf075b7.js"
+    ],
+    "/summary/page": [
+      "static/chunks/webpack-598a2e24bdcae713.js",
+      "static/chunks/4bd1b696-5b2b1e7b5478d01a.js",
+      "static/chunks/684-5c5347e335e54b32.js",
+      "static/chunks/main-app-ca64c422c6d50b46.js",
+      "static/chunks/app/summary/page-e62f41a1a05c7727.js"
     ]
   }
 }
